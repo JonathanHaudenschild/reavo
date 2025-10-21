@@ -1,0 +1,9 @@
+/*
+Theme Name: Reavo
+Description: A modern WordPress theme built with TailwindCSS
+Version: 1.0.0
+Author: Reavo Team
+*/
+
+/* Import the compiled TailwindCSS styles */
+@import url("./assets/build/main.css");

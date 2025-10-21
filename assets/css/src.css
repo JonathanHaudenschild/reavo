@@ -1,0 +1,1019 @@
+@import "tailwindcss";
+
+/* Custom CSS variables for realistic heart design */
+:root {
+  --amber: #ffbe0b;
+  --orange-pantone: #fb5607;
+  --rose: #ff006e;
+  --blue-violet: #8338ec;
+  --azure: #3a86ff;
+  
+  /* Futuristic Metallic Heart Colors - Iridescent Chrome */
+  --heart-chrome: linear-gradient(145deg, #E6E6FA 0%, #DDA0DD 15%, #9370DB 30%, #8A2BE2 45%, #4B0082 60%, #191970 75%, #000080 90%, #4169E1 100%);
+  --heart-holographic: linear-gradient(135deg, #FF1493 0%, #00BFFF 25%, #7FFF00 50%, #FFD700 75%, #FF6347 100%);
+  --heart-metallic-1: linear-gradient(160deg, #C0C0C0 0%, #708090 20%, #2F4F4F 40%, #191970 60%, #8A2BE2 80%, #DA70D6 100%);
+  --heart-metallic-2: linear-gradient(200deg, #FFD700 0%, #FFA500 20%, #FF6347 40%, #DC143C 60%, #8B008B 80%, #4B0082 100%);
+  --heart-reflection: linear-gradient(90deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.9) 100%);
+  --heart-shadow: rgba(75, 0, 130, 0.8);
+  --heart-glow: rgba(138, 43, 226, 0.6);
+  --gradient-background: linear-gradient(135deg, #3a86ff 0%, #8338ec 25%, #ff006e 50%, #fb5607 75%, #ffbe0b 100%);
+  --shadow-3d-heart: 0 50px 100px rgba(139, 0, 0, 0.4), 0 25px 50px rgba(165, 42, 42, 0.3);
+  --glow-3d: 0 0 60px rgba(139, 0, 0, 0.6);
+}
+
+/* 3D Heart focused design */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+}
+
+.reavo-container {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+/* 3D Heart Container */
+.heart-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 2000px;
+  height: 100vh;
+  width: 100vw;
+  padding: 0;
+  margin: 0;
+  z-index: 10;
+}
+
+/* Futuristic Metallic Heart ❤️ */
+.heart-3d {
+  position: relative;
+  width: 250px;
+  height: 220px;
+  transform-style: preserve-3d;
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  filter: drop-shadow(0 15px 30px var(--heart-shadow));
+}
+
+/* Futuristic Heart Structure */
+.heart-main {
+  position: relative;
+  width: 250px;
+  height: 220px;
+  transform-style: preserve-3d;
+}
+
+/* Core Metallic Heart Shape - Classic Heart ❤️ */
+.heart-core {
+  position: relative;
+  width: 100px;
+  height: 90px;
+  transform: rotate(-45deg);
+  transform-style: preserve-3d;
+  top: 60px;
+  left: 75px;
+}
+
+.heart-core::before,
+.heart-core::after {
+  content: '';
+  position: absolute;
+  width: 52px;
+  height: 80px;
+  background: var(--heart-chrome);
+  border-radius: 50px 50px 0 0;
+  transform: rotate(-45deg);
+  transform-origin: 0 100%;
+  box-shadow: 
+    inset 15px 15px 30px rgba(0,0,0,0.4),
+    inset -10px -10px 20px rgba(255,255,255,0.3),
+    0 10px 20px var(--heart-shadow);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.heart-core::before {
+  left: 50px;
+  background: var(--heart-metallic-2);
+  z-index: 2;
+}
+
+.heart-core::after {
+  left: 0px;
+  transform: rotate(45deg);
+  background: var(--heart-metallic-1);
+  z-index: 2;
+}
+
+
+
+
+
+
+
+
+
+
+/* Layer 1 - Heart Shadow Base */
+.heart-layer-1 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+
+.heart-shadow-deep {
+  position: absolute;
+  width: 200px;
+  height: 180px;
+  top: 15px;
+  transform-style: preserve-3d;
+}
+
+.heart-shadow-deep::before,
+.heart-shadow-deep::after {
+  content: '';
+  position: absolute;
+  width: 105px;
+  height: 85px;
+  background: linear-gradient(145deg, rgba(139,0,0,0.6) 0%, rgba(75,0,0,0.4) 100%);
+  border-radius: 52px 52px 0 0;
+  transform: rotate(-45deg);
+  transform-origin: 0 100%;
+  left: 47px;
+  top: -2px;
+  filter: blur(4px);
+}
+
+.heart-shadow-deep::after {
+  transform: rotate(45deg);
+  left: 47px;
+}
+
+/* Layer 2 - Heart Main Body */
+.heart-layer-2 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+
+.heart-body-left,
+.heart-body-right {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  background: var(--heart-holographic);
+  border-radius: 60px 60px 0 0;
+  transform: rotate(-45deg);
+  transform-origin: 0 100%;
+  left: 90px;
+  top: 17px;
+  box-shadow: 
+    inset 15px 15px 30px rgba(0,0,0,0.4),
+    inset -10px -10px 20px rgba(255,255,255,0.3),
+    0 10px 20px rgba(138,43,226,0.5);
+  border: 1px solid rgba(255,255,255,0.4);
+  backdrop-filter: blur(1px);
+}
+
+.heart-body-right {
+  transform: rotate(45deg);
+  left: 90px;
+  background: var(--heart-chrome);
+}
+
+.heart-body-tip {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  background: linear-gradient(135deg, var(--heart-metallic-1) 0%, var(--heart-metallic-2) 100%);
+  transform: rotate(45deg);
+  bottom: 25px;
+  left: 135px;
+  border-radius: 4px;
+  box-shadow: 
+    inset 5px 5px 10px rgba(0,0,0,0.4),
+    inset -3px -3px 6px rgba(255,255,255,0.3),
+    0 8px 16px rgba(138,43,226,0.4);
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+/* Layer 3 - Heart Highlights */
+.heart-layer-3 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+
+.heart-highlight-1 {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  background: radial-gradient(ellipse at 30% 30%, rgba(255,255,255,0.6) 0%, rgba(255,200,220,0.3) 50%, transparent 100%);
+  border-radius: 20px 20px 0 0;
+  top: 25px;
+  left: 65px;
+  transform: rotate(-20deg) translateZ(5px);
+  filter: blur(1px);
+}
+
+.heart-highlight-2 {
+  position: absolute;
+  width: 35px;
+  height: 35px;
+  background: radial-gradient(ellipse at 40% 40%, rgba(255,255,255,0.5) 0%, rgba(255,180,200,0.2) 60%, transparent 100%);
+  border-radius: 17px 17px 0 0;
+  top: 30px;
+  left: 105px;
+  transform: rotate(20deg) translateZ(5px);
+  filter: blur(1px);
+}
+
+.heart-highlight-3 {
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,220,235,0.4) 70%, transparent 100%);
+  border-radius: 50%;
+  top: 45px;
+  left: 85px;
+  transform: translateZ(8px);
+}
+
+/* Layer 4 - Heart Gradients */
+.heart-layer-4 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+
+.heart-gradient-1,
+.heart-gradient-2 {
+  position: absolute;
+  width: 85px;
+  height: 65px;
+  border-radius: 42px 42px 0 0;
+  transform: rotate(-45deg);
+  transform-origin: 0 100%;
+  left: 57px;
+  top: 17px;
+  opacity: 0.4;
+}
+
+.heart-gradient-1 {
+  background: linear-gradient(145deg, rgba(255,20,147,0.4) 0%, rgba(220,20,60,0.2) 50%, transparent 100%);
+  transform: rotate(-45deg) translateZ(3px);
+}
+
+.heart-gradient-2 {
+  background: linear-gradient(145deg, rgba(255,69,180,0.4) 0%, rgba(178,34,34,0.2) 50%, transparent 100%);
+  transform: rotate(45deg) translateZ(3px);
+  left: 57px;
+}
+
+.heart-gradient-3 {
+  position: absolute;
+  width: 160px;
+  height: 140px;
+  background: radial-gradient(ellipse at center, rgba(255,20,147,0.15) 0%, rgba(220,20,60,0.08) 40%, transparent 70%);
+  border-radius: 50%;
+  top: 20px;
+  left: 20px;
+  transform: translateZ(1px);
+}
+
+/* Layer 5 - Heart Effects */
+.heart-layer-5 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+
+.heart-surface-glow {
+  display: none;
+}
+
+.heart-surface-shine {
+  position: absolute;
+  width: 100px;
+  height: 50px;
+  background: var(--heart-reflection);
+  border-radius: 50px 25px;
+  top: 55px;
+  left: 110px;
+  transform: rotate(-20deg) translateZ(6px);
+  filter: blur(2px);
+  animation: shine 4s ease-in-out infinite;
+  opacity: 0.6;
+}
+
+.heart-surface-sparkle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, transparent 70%);
+  border-radius: 50%;
+  top: 60px;
+  left: 85px;
+  transform: translateZ(10px);
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+.heart-surface-sparkle::before {
+  content: '';
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: radial-gradient(circle, rgba(255,255,255,0.7) 0%, transparent 70%);
+  border-radius: 50%;
+  top: -20px;
+  left: 15px;
+  animation: sparkle 2s ease-in-out infinite 0.5s;
+}
+
+.heart-surface-sparkle::after {
+  content: '';
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: radial-gradient(circle, rgba(255,255,255,0.6) 0%, transparent 70%);
+  border-radius: 50%;
+  top: 15px;
+  left: -15px;
+  animation: sparkle 2s ease-in-out infinite 1s;
+}
+
+/* Layer 6 - Heart Details */
+.heart-layer-6 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+
+.heart-detail-1,
+.heart-detail-2 {
+  position: absolute;
+  width: 80px;
+  height: 60px;
+  border-radius: 40px 40px 0 0;
+  transform: rotate(-45deg);
+  transform-origin: 0 100%;
+  left: 60px;
+  top: 20px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+}
+
+.heart-detail-2 {
+  transform: rotate(45deg);
+  left: 60px;
+}
+
+.heart-detail-3 {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: radial-gradient(circle, rgba(255,20,147,0.6) 0%, transparent 70%);
+  border-radius: 50%;
+  top: 70px;
+  left: 85px;
+  transform: translateZ(12px);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.heart-detail-4 {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: radial-gradient(circle, rgba(255,69,180,0.5) 0%, transparent 70%);
+  border-radius: 50%;
+  top: 55px;
+  left: 95px;
+  transform: translateZ(12px);
+  animation: pulse 1.5s ease-in-out infinite 0.7s;
+}
+
+/* Layer 7 - Outer Effects */
+.heart-layer-7 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+
+.heart-outer-glow {
+  display: none;
+}
+
+.heart-outer-aura {
+  display: none;
+}
+
+.heart-surface {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at 30% 30%, rgba(255,255,255,0.2) 0%, transparent 50%);
+  border-radius: 50%;
+  transform: translateZ(25px);
+}
+
+.heart-highlight {
+  position: absolute;
+  width: 80px;
+  height: 60px;
+  background: radial-gradient(ellipse, rgba(255,255,255,0.4) 0%, transparent 70%);
+  border-radius: 50%;
+  top: 40px;
+  left: 60px;
+  transform: translateZ(30px);
+  filter: blur(10px);
+}
+
+/* Heart Shadow Layers */
+.heart-layer-2,
+.heart-layer-3,
+.heart-layer-4,
+.heart-layer-5 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+
+.heart-shadow-1,
+.heart-shadow-2,
+.heart-shadow-3,
+.heart-shadow-4 {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0.8;
+  filter: blur(2px);
+}
+
+.heart-shadow-1 {
+  background: linear-gradient(135deg, #fb560799 0%, #ff006e99 100%);
+  transform: translateZ(-10px) scale(0.95);
+  border-radius: 50%;
+}
+
+.heart-shadow-2 {
+  background: linear-gradient(135deg, #fb560766 0%, #ff006e66 100%);
+  transform: translateZ(-20px) scale(0.9);
+  border-radius: 50%;
+  filter: blur(4px);
+  opacity: 0.6;
+}
+
+.heart-shadow-3 {
+  background: linear-gradient(135deg, #fb560733 0%, #ff006e33 100%);
+  transform: translateZ(-30px) scale(0.85);
+  border-radius: 50%;
+  filter: blur(6px);
+  opacity: 0.4;
+}
+
+.heart-shadow-4 {
+  background: linear-gradient(135deg, #fb560722 0%, #ff006e22 100%);
+  transform: translateZ(-40px) scale(0.8);
+  border-radius: 50%;
+  filter: blur(8px);
+  opacity: 0.3;
+}
+
+/* Heart Details - Coronary Arteries */
+.heart-details {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+
+/* Clean modern heart - removed old medical elements */
+
+/* Futuristic Heart Animation Keyframes */
+@keyframes heartGlow {
+  0% { 
+    opacity: 0.3;
+    transform: translateZ(-2px) scale(1);
+    filter: hue-rotate(0deg);
+  }
+  100% { 
+    opacity: 0.5;
+    transform: translateZ(-2px) scale(1.05);
+    filter: hue-rotate(60deg);
+  }
+}
+
+@keyframes shine {
+  0% { 
+    transform: rotate(-20deg) translateZ(6px) translateX(-50px);
+    opacity: 0;
+  }
+  50% { 
+    opacity: 0.8;
+  }
+  100% { 
+    transform: rotate(-20deg) translateZ(6px) translateX(150px);
+    opacity: 0;
+  }
+}
+
+@keyframes sparkle {
+  0%, 100% { 
+    opacity: 0.5;
+    transform: translateZ(10px) scale(1);
+    filter: brightness(1);
+  }
+  50% { 
+    opacity: 1;
+    transform: translateZ(10px) scale(1.5);
+    filter: brightness(2);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { 
+    opacity: 0.6;
+    transform: translateZ(12px) scale(1);
+    filter: brightness(1);
+  }
+  50% { 
+    opacity: 1;
+    transform: translateZ(12px) scale(1.4);
+    filter: brightness(1.5);
+  }
+}
+
+@keyframes outerGlow {
+  0% { 
+    opacity: 0.2;
+    transform: translateZ(-5px) scale(1);
+    filter: hue-rotate(0deg) blur(8px);
+  }
+  100% { 
+    opacity: 0.4;
+    transform: translateZ(-5px) scale(1.1);
+    filter: hue-rotate(90deg) blur(8px);
+  }
+}
+
+@keyframes aura {
+  0% { 
+    opacity: 0.1;
+    transform: translateZ(-10px) scale(1) rotate(0deg);
+    filter: hue-rotate(0deg) blur(12px);
+  }
+  100% { 
+    opacity: 0.25;
+    transform: translateZ(-10px) scale(1.05) rotate(360deg);
+    filter: hue-rotate(180deg) blur(12px);
+  }
+}
+
+@keyframes sparkle {
+  0%, 100% { 
+    opacity: 0.3;
+    transform: translateZ(35px) scale(1);
+  }
+  50% { 
+    opacity: 1;
+    transform: translateZ(35px) scale(1.2);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { 
+    opacity: 0.4;
+    transform: translateZ(33px) scale(1);
+  }
+  50% { 
+    opacity: 0.8;
+    transform: translateZ(33px) scale(1.3);
+  }
+}
+
+@keyframes outerGlow {
+  0% { 
+    opacity: 0.15;
+    transform: translateZ(-5px) scale(1);
+  }
+  100% { 
+    opacity: 0.25;
+    transform: translateZ(-5px) scale(1.1);
+  }
+}
+
+@keyframes aura {
+  0% { 
+    opacity: 0.08;
+    transform: translateZ(-15px) scale(1) rotate(0deg);
+  }
+  100% { 
+    opacity: 0.15;
+    transform: translateZ(-15px) scale(1.05) rotate(2deg);
+  }
+}
+
+/* Award-Winning 3D Heart Hover Effects */
+/* Futuristic Heart Hover Effects */
+.heart-3d:hover {
+  transform: rotateY(15deg) rotateX(10deg) scale(1.08);
+  filter: drop-shadow(0 35px 70px var(--heart-shadow)) drop-shadow(0 0 50px var(--heart-glow));
+}
+
+.heart-3d:hover .heart-surface-glow {
+  animation-duration: 1.5s;
+  opacity: 0.6;
+}
+
+.heart-3d:hover .heart-outer-glow {
+  opacity: 0.5;
+  transform: translateZ(-5px) scale(1.3);
+  animation-duration: 2s;
+}
+
+.heart-3d:hover .heart-outer-aura {
+  opacity: 0.3;
+  transform: translateZ(-10px) scale(1.2) rotate(10deg);
+  animation-duration: 3s;
+}
+
+.heart-3d:hover .heart-surface-shine {
+  animation-duration: 2s;
+}
+
+.heart-3d:hover .heart-core::before,
+.heart-3d:hover .heart-core::after {
+  filter: brightness(1.2) saturate(1.3);
+  box-shadow: 
+    inset 20px 20px 40px rgba(0,0,0,0.3),
+    inset -15px -15px 30px rgba(255,255,255,0.4),
+    0 15px 30px var(--heart-shadow),
+    0 0 30px var(--heart-glow);
+}
+
+.heart-3d:hover .heart-layer-1 {
+  transform: translateZ(15px);
+}
+
+.heart-3d:hover .heart-layer-2 {
+  transform: translateZ(5px);
+}
+
+/* 3D Heart Active State */
+.heart-3d:active {
+  transform: rotateY(25deg) rotateX(20deg) scale(1.02);
+}
+
+/* 3D Heart Pulse Animation */
+.heart-3d.pulse {
+  animation: heartbeat3D 0.8s ease-in-out;
+}
+
+@keyframes heartbeat3D {
+  0%, 100% { 
+    transform: rotateY(0deg) rotateX(0deg) scale(1);
+  }
+  25% {
+    transform: rotateY(20deg) rotateX(15deg) scale(1.15);
+  }
+  50% { 
+    transform: rotateY(40deg) rotateX(30deg) scale(1.35);
+    filter: drop-shadow(var(--glow-3d));
+  }
+  75% {
+    transform: rotateY(20deg) rotateX(15deg) scale(1.15);
+  }
+}
+
+/* Positive Feedback Animations */
+.heart-3d.positive {
+  animation: positiveHeartbeat 1.2s ease-in-out;
+}
+
+@keyframes positiveHeartbeat {
+  0%, 100% { 
+    transform: rotateY(0deg) rotateX(0deg) scale(1);
+    filter: drop-shadow(0 0 20px #10b981);
+  }
+  20% {
+    transform: rotateY(15deg) rotateX(10deg) scale(1.1);
+    filter: drop-shadow(0 0 40px #10b981);
+  }
+  40% {
+    transform: rotateY(30deg) rotateX(20deg) scale(1.25);
+    filter: drop-shadow(0 0 60px #10b981);
+  }
+  60% {
+    transform: rotateY(20deg) rotateX(15deg) scale(1.15);
+    filter: drop-shadow(0 0 50px #10b981);
+  }
+  80% {
+    transform: rotateY(10deg) rotateX(8deg) scale(1.05);
+    filter: drop-shadow(0 0 30px #10b981);
+  }
+}
+
+/* Negative Feedback Animations */
+.heart-3d.negative {
+  animation: negativeShake 0.8s ease-in-out;
+}
+
+@keyframes negativeShake {
+  0%, 100% { 
+    transform: rotateY(0deg) rotateX(0deg) scale(1);
+  }
+  10% {
+    transform: rotateY(-5deg) rotateX(-3deg) scale(0.98);
+  }
+  20% {
+    transform: rotateY(5deg) rotateX(3deg) scale(1.02);
+  }
+  30% {
+    transform: rotateY(-8deg) rotateX(-5deg) scale(0.96);
+  }
+  40% {
+    transform: rotateY(8deg) rotateX(5deg) scale(1.04);
+  }
+  50% {
+    transform: rotateY(-10deg) rotateX(-7deg) scale(0.95);
+  }
+  60% {
+    transform: rotateY(8deg) rotateX(5deg) scale(1.03);
+  }
+  70% {
+    transform: rotateY(-5deg) rotateX(-3deg) scale(0.98);
+  }
+  80% {
+    transform: rotateY(3deg) rotateX(2deg) scale(1.01);
+  }
+  90% {
+    transform: rotateY(-2deg) rotateX(-1deg) scale(0.99);
+  }
+}
+
+/* BPM Display Feedback */
+.bpm-positive {
+  animation: bpmGlow 1s ease-in-out;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(34, 197, 94, 0.2)) !important;
+  border: 2px solid rgba(16, 185, 129, 0.5) !important;
+}
+
+.bpm-negative {
+  animation: bpmShake 0.6s ease-in-out;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(220, 38, 127, 0.2)) !important;
+  border: 2px solid rgba(239, 68, 68, 0.5) !important;
+}
+
+@keyframes bpmGlow {
+  0%, 100% { 
+    transform: scale(1);
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+  }
+  50% { 
+    transform: scale(1.05);
+    box-shadow: 0 0 40px rgba(16, 185, 129, 0.6);
+  }
+}
+
+@keyframes bpmShake {
+  0%, 100% { transform: translateX(0); }
+  10% { transform: translateX(-3px); }
+  20% { transform: translateX(3px); }
+  30% { transform: translateX(-2px); }
+  40% { transform: translateX(2px); }
+  50% { transform: translateX(-1px); }
+  60% { transform: translateX(1px); }
+}
+
+/* Status Indicator Feedback */
+.status-positive {
+  animation: statusSuccess 1s ease-in-out;
+}
+
+.status-negative {
+  animation: statusError 0.8s ease-in-out;
+}
+
+@keyframes statusSuccess {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.5); }
+}
+
+@keyframes statusError {
+  0%, 100% { transform: scale(1); }
+  25%, 75% { transform: scale(1.2); }
+  50% { transform: scale(0.8); }
+}
+
+/* Full Screen Flash Feedback */
+.screen-flash-positive {
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.3) 0%, rgba(34, 197, 94, 0.1) 50%, transparent 100%);
+  animation: flashPositive 0.8s ease-out;
+}
+
+.screen-flash-negative {
+  background: radial-gradient(circle, rgba(239, 68, 68, 0.4) 0%, rgba(220, 38, 127, 0.2) 50%, transparent 100%);
+  animation: flashNegative 0.6s ease-out;
+}
+
+@keyframes flashPositive {
+  0% { 
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  30% { 
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  100% { 
+    opacity: 0;
+    transform: scale(1.2);
+  }
+}
+
+@keyframes flashNegative {
+  0% { 
+    opacity: 0;
+    transform: scale(1);
+  }
+  20% { 
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+  40% { 
+    opacity: 0.4;
+    transform: scale(1.02);
+  }
+  60% { 
+    opacity: 0.7;
+    transform: scale(1.03);
+  }
+  80% { 
+    opacity: 0.3;
+    transform: scale(1.01);
+  }
+  100% { 
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
+/* Floating particles system */
+.particle {
+  position: absolute;
+  background: var(--gradient-glow);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: particleFloat 6s ease-in-out infinite;
+}
+
+.particle-1 { width: 4px; height: 4px; top: 20%; left: 10%; animation-delay: 0s; }
+.particle-2 { width: 6px; height: 6px; top: 40%; right: 15%; animation-delay: 1s; }
+.particle-3 { width: 3px; height: 3px; top: 60%; left: 20%; animation-delay: 2s; }
+.particle-4 { width: 5px; height: 5px; top: 80%; right: 25%; animation-delay: 3s; }
+.particle-5 { width: 4px; height: 4px; top: 30%; left: 80%; animation-delay: 4s; }
+
+/* Premium BPM display */
+.bpm-display {
+  background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.2);
+  box-shadow: var(--shadow-premium);
+}
+
+/* Status indicator animations */
+.status-perfect {
+  background: linear-gradient(135deg, #10b981, #34d399);
+  animation: scalePulse 1.5s ease-in-out infinite;
+}
+
+.status-slow {
+  background: linear-gradient(135deg, #3b82f6, #60a5fa);
+  animation: bounce-soft 2s ease-in-out infinite;
+}
+
+.status-fast {
+  background: linear-gradient(135deg, #ef4444, #f87171);
+  animation: glow 1s ease-in-out infinite alternate;
+}
+
+/* Premium buttons */
+.btn-premium {
+  position: relative;
+  background: linear-gradient(135deg, var(--rusty-red), var(--ou-crimson));
+  border: none;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-premium::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn-premium:hover::before {
+  left: 100%;
+}
+
+.btn-premium:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-glow);
+}
+
+/* Floating card effects */
+.floating-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: var(--shadow-premium);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.floating-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 35px 70px -12px rgba(136, 13, 30, 0.35);
+}
+
+/* Progress ring animation */
+.progress-ring {
+  transform: rotate(-90deg);
+  transition: stroke-dashoffset 0.5s ease-in-out;
+}
+
+/* Glowing text effects */
+.text-glow {
+  text-shadow: 0 0 20px rgba(221, 45, 74, 0.5);
+}
+
+/* Premium section dividers */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--amaranth-pink), transparent);
+  margin: 4rem 0;
+}
+
+/* Responsive premium adjustments */
+@media (max-width: 768px) {
+  .hero-gradient {
+    background-size: 200% 200%;
+  }
+  
+  .heart-premium {
+    width: 120px;
+    height: 120px;
+  }
+  
+  .particle {
+    display: none;
+  }
+}
+
+/* Loading states */
+.loading-shimmer {
+  background: linear-gradient(90deg, rgba(255,255,255,0.0) 25%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.0) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
