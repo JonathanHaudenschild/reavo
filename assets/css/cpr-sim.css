@@ -699,15 +699,21 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 .status-dot {
-  position: absolute;
-  top: 14px;
-  right: 14px;
+  position: static; /* flow with content */
   width: 14px;
   height: 14px;
   border-radius: 999px;
   background: #ffffff8f;
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.15), 0 0 8px #ffffffaa inset;
-  z-index: 30;
+  display: block;
+  margin: 8px auto 0; /* center under the heart */
+}
+/* Optional modifier to pin to top-right if needed later */
+.status-dot--top {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  margin: 0;
 }
 .score-badge { position:absolute; top: 14px; right: 44px; z-index: 30; display: inline-flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 12px; background: rgba(255,255,255,0.96); box-shadow: 0 8px 20px rgba(0,0,0,.08); font-weight: 900; color: #111827; letter-spacing: .01em; }
 .score-badge .score-label { opacity: .6; font-weight: 800; font-size: 12px; text-transform: uppercase; }
@@ -718,6 +724,10 @@
 .score-panel .score-title { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 800; color: #4b5563; }
 .score-panel .score-value { font-size: 22px; font-weight: 900; color: #111827; }
 .score-panel.hidden { display: none; }
+.score-panel.reveal-final { animation: scoreReveal .6s cubic-bezier(.2,.8,.2,1); }
+@keyframes scoreReveal { 0% { opacity: 0; transform: translateY(12px) scale(.96); } 60% { opacity: 1; transform: translateY(0) scale(1.06); } 100% { transform: translateY(0) scale(1); } }
+.score-value.spark { animation: scoreSpark .9s ease; text-shadow: 0 0 0 rgba(16,185,129,0); }
+@keyframes scoreSpark { 0% { text-shadow: 0 0 0 rgba(16,185,129,0); } 30% { text-shadow: 0 0 18px rgba(16,185,129,.55); } 100% { text-shadow: 0 0 0 rgba(16,185,129,0); } }
 .info-reset { margin-left: 12px; border: 0; border-radius: 10px; padding: 6px 10px; background: #111827; color: #fff; font-weight: 800; cursor: pointer; }
 .info-reset:hover { background: #1f2937; }
 .bpm-helper {

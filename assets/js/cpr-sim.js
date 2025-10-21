@@ -425,6 +425,22 @@
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
+
+    // Reset button (final score panel)
+    const resetBtn = document.getElementById("reset-all");
+    if (resetBtn) {
+      resetBtn.addEventListener("click", (ev) => {
+        ev.preventDefault();
+        // Dispatch global reset
+        document.dispatchEvent(new CustomEvent("cprReset"));
+        // Scroll to top smoothly
+        try {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        } catch (e) {
+          window.scrollTo(0, 0);
+        }
+      });
+    }
   }
 
   if (document.readyState === "loading") {
@@ -460,6 +476,10 @@
     updateScoreUI(0);
     const finalPanel = document.getElementById("score-panel-final");
     if (finalPanel) finalPanel.classList.add("hidden");
+    const rp = document.getElementById("revive-progress");
+    if (rp) rp.classList.remove("hidden");
+    // Restart decay loop
+    startDecay();
   });
 
   document.addEventListener("cprFeedback", (e) => {
@@ -557,7 +577,17 @@
     updateScoreUI(total);
     bumpScoreBadge();
     const finalPanel = document.getElementById("score-panel-final");
-    if (finalPanel) finalPanel.classList.remove("hidden");
+    if (finalPanel) {
+      finalPanel.classList.remove("hidden");
+      finalPanel.classList.add("reveal-final");
+      setTimeout(() => finalPanel.classList.remove("reveal-final"), 700);
+      const sv = document.getElementById("score-value");
+      if (sv) {
+        sv.classList.remove("spark");
+        void sv.offsetWidth;
+        sv.classList.add("spark");
+      }
+    }
   }
   function updateScoreUI(score) {
     const badge = document.getElementById("score-number");
