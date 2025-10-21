@@ -84,10 +84,7 @@ add_action('init', function () {
 
       <header class="sim-topbar">
         <div class="sim-pill">
-          <span class="sim-icon">❤</span>
-          <span class="sim-text">Aim 100–120 BPM</span>
         </div>
-        <div class="sim-pill">Exact rhythm revives • Off rhythm harms</div>
       </header>
 
       <main class="sim-grid">

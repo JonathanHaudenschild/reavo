@@ -14,6 +14,8 @@ class CPRHeartMinimal {
   init() {
     // Listen for 3D heart clicks
     document.addEventListener('heartClick', (e) => this.handleHeartClick(e));
+    // Listen for global reset to clear internal state
+    document.addEventListener('cprReset', () => this.reset());
     
     const resetBtn = document.getElementById('reset-btn');
     if (resetBtn) {

@@ -9,13 +9,7 @@
   <div class="cpr-sim">
     <!-- Pure white background (no tinted overlay) -->
 
-    <header class="sim-topbar">
-      <div class="sim-pill">
-        <span class="sim-icon">❤</span>
-        <span class="sim-text">Aim 100–120 BPM</span>
-      </div>
-      <div class="sim-pill">Exact rhythm revives • Off rhythm harms</div>
-    </header>
+    <header class="sim-topbar"></header>
 
     <main class="sim-stage">
       <section class="sim-heart">
@@ -26,7 +20,12 @@
 
         <!-- Heart container + canvas (stacked above ring/progress) -->
         <div class="heart-container">
-          <div id="screen-flash" class="screen-flash"></div>
+          <!-- Mindmap overlay (non-interactive) -->
+          <div
+            id="mindmap-overlay"
+            class="mindmap-overlay"
+            aria-hidden="true"
+          ></div>
           <div class="heart-3d">
             <div id="cpr-heart" aria-label="CPR Heart" role="button"></div>
           </div>
@@ -106,8 +105,6 @@
 
         <!-- Status indicator (top-right) -->
         <div class="status-dot" id="status-indicator" aria-hidden="true"></div>
-
-        <!-- BPM badge removed for a cleaner UI -->
       </section>
 
       <!-- Patient panel removed for a cleaner, focused UI -->
@@ -127,26 +124,69 @@
   <!-- wp:html -->
   <section class="info-band" id="about">
     <div class="info-wrap">
-      <article class="info-hero">
-        <h2>REAVO: Simple. Visual. Life‑Saving Rhythm.</h2>
-        <p>
-          REAVO turns CPR pacing into an intuitive, visual experience. Tap the
-          heart in rhythm: on‑target beats build life, off‑target drains it.
-          Reach 100% and the heart reanimates—auto‑beating to confirm the pace
-          you’re aiming for in reality.
+      <article class="info-hero reveal reveal-zoom">
+        <h2 class="reveal delay-1">Reavo</h2>
+        <div
+          class="score-panel hidden"
+          id="score-panel-final"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          <div class="score-title">Score</div>
+          <div class="score-value" id="score-value">0</div>
+          <button type="button" id="reset-all" class="info-reset">
+            Restart
+          </button>
+        </div>
+        <!-- Final score (shown after successful reanimation) -->
+        <div
+          class="score-panel hidden"
+          id="score-panel-final"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          <div class="score-title">Score</div>
+          <div class="score-value" id="score-value">0</div>
+        </div>
+        <p class="reveal delay-1">
+          Schon im 16. Jahrhundert versuchten Ärzt:innen, Menschen nach einem
+          Herzstillstand zurück ins Leben zu holen, mit Methoden, die heute
+          absurd wirken: etwa Blasebälge zur Sauerstoffgabe oder
+          Tabakrauch-Einläufen.
         </p>
-        <p>
-          The target range is <strong>100–120 BPM</strong>. Train your timing in
-          seconds, without reading a manual. It’s designed for classrooms,
-          teams, and anyone who wants to feel what good pacing looks and sounds
-          like.
+        <p class="reveal delay-2">
+          Heute wissen wir es besser: Sofortige Herzdruckmassage rettet Leben.
+          Doch in Deutschland greifen nur 40 % der Zeug:innen eines
+          Herz-Kreislauf-Stillstand ein, meist aus Angst, etwas falsch zu
+          machen. Erste-Hilfe-Kurse liegen oft Jahre zurück, regelmäßige Übung
+          fehlt.
         </p>
-        <p>
-          Want to integrate REAVO into your training or demo? We can tailor the
-          visuals, thresholds, and content to your audience. Let’s make better
-          outcomes feel obvious.
+        <p class="reveal delay-2">
+          Die Folgen sind dramatisch: Nach 3 Minuten ohne Sauerstoff beginnt das
+          Gehirn irreparable Schäden zu erleiden, aber der Rettungsdienst
+          braucht im Schnitt 8 Minuten. Nur 10 % der jährlich 120.000
+          Betroffenen in Deutschland überleben einen Herzstillstand außerhalb
+          von Kliniken.
         </p>
-        <a class="info-cta" href="#contact">Get in touch</a>
+        <p class="reveal delay-3">
+          <strong>Genau hier setzt Reavo an:</strong>
+        </p>
+        <p class="reveal delay-3">
+          Die erste öffentlich zugängliche interaktive CPR-Trainingsstation. Für
+          Bahnhöfe, Universitäten, Museen und Messen – Orte, an denen Menschen
+          ohnehin warten. Niedrigschwellig, spielerisch, jederzeit wiederholbar,
+          um Angst in Routine zu verwandeln.
+        </p>
+        <p class="reveal delay-3">
+          <strong>Unsere Vision:</strong> Reanimation so selbstverständlich
+          machen wie Händewaschen.
+        </p>
+        <p class="reveal delay-3">
+          Wir suchen Partner:innen: Städte, Unternehmen, Forschung &amp;
+          Gesundheitsakteure. Jede Idee, jeder Kontakt zählt – weil jedes
+          Menschenleben zählt.
+        </p>
+        <a class="info-cta reveal delay-2" href="#contact">Kontakt aufnehmen</a>
       </article>
     </div>
   </section>
@@ -155,12 +195,12 @@
   <!-- wp:html -->
   <section class="info-band" id="contact" aria-label="Contact">
     <div class="info-wrap">
-      <article class="info-hero info-hero--full" style="text-align: center">
+      <article
+        class="info-hero info-hero--full reveal reveal-right"
+        style="text-align: center"
+      >
         <h2>Contact</h2>
-        <p>
-          Bring REAVO to your team, classroom, or event. We’ll tailor the
-          pacing, visuals, and copy to your audience.
-        </p>
+        <p>Support Reavo</p>
         <a class="info-cta" href="mailto:hello@reavo.example"
           >hello@reavo.example</a
         >

@@ -4,6 +4,12 @@
   let decayTimer = null;
   let soundEnabled = true;
   let heartbeatTimer = null; // repeating beat sound after revive
+  // Score state
+  let scoreBeats = 0;
+  let scoreStartTime = null;
+  let scoreEndTime = null;
+  let scoreDevSum = 0; // sum of absolute deviations from 110 BPM
+  let scoreSamples = 0;
 
   function clamp(n, min, max) {
     return Math.max(min, Math.min(max, n));
@@ -18,7 +24,7 @@
     const rp = document.getElementById("revive-progress");
     if (rp) {
       const pct = Math.max(0, Math.min(100, life));
-      rp.style.setProperty('--revive-pct', pct + '%');
+      rp.style.setProperty("--revive-pct", pct + "%");
     }
   }
 
@@ -64,10 +70,24 @@
       setTimeout(() => beep(1568, 180), 320);
     }
     // Hide the progress pie once revived
-    const rp = document.getElementById('revive-progress');
-    if (rp) rp.classList.add('hidden');
+    const rp = document.getElementById("revive-progress");
+    if (rp) rp.classList.add("hidden");
     // Start subtle heartbeat sound matching BPM
     startBeatSound(Math.max(80, Math.min(140, successBpm || 110)));
+    // Hide mindmap to keep focus on revived heart
+    const mm = document.getElementById("mindmap-overlay");
+    if (mm) mm.classList.add("hidden");
+    // Smooth scroll to main content card after a short delay
+    const target =
+      document.querySelector("#about .info-hero") ||
+      document.querySelector(".info-hero");
+    if (target && typeof target.scrollIntoView === "function") {
+      setTimeout(() => {
+        try {
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+        } catch (e) {}
+      }, 450);
+    }
   }
 
   function flashFlatline() {
@@ -89,8 +109,9 @@
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
-        osc.connect(gain); gain.connect(ctx.destination);
-        osc.type = 'sine';
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = "sine";
         const now = ctx.currentTime;
         // down-swept thump
         osc.frequency.setValueAtTime(220, now);
@@ -106,7 +127,109 @@
   }
 
   function stopBeatSound() {
-    if (heartbeatTimer) { clearInterval(heartbeatTimer); heartbeatTimer = null; }
+    if (heartbeatTimer) {
+      clearInterval(heartbeatTimer);
+      heartbeatTimer = null;
+    }
+  }
+
+  // Build a text-doodle overlay around the heart (no nodes/lines, just scattered chips)
+  function initMindmap() {
+    const wrap = document.getElementById("mindmap-overlay");
+    const root = document.querySelector(".sim-heart .heart-container");
+    if (!wrap || !root) return;
+    // Clear previous
+    wrap.innerHTML = "";
+    const rect = root.getBoundingClientRect();
+    // Exclusion center/radius based on the actual ring position/size
+    const ring = document.getElementById("target-ring");
+    let cx = rect.width / 2,
+      cy = rect.height / 2;
+    let excludeR = Math.min(rect.width, rect.height) * 0.2; // fallback
+    if (ring) {
+      const rr = ring.getBoundingClientRect();
+      const ringRadius = Math.min(rr.width, rr.height) / 2;
+      cx = rr.left - rect.left + rr.width / 2;
+      cy = rr.top - rect.top + rr.height / 2;
+      excludeR = ringRadius; // generous gap around the heart+ring
+    }
+    const phrases = [
+      "Help!",
+      "I can't breathe",
+      "Call ambulance",
+      "Is there a doctor?",
+      "Stay with me",
+      "Check breathing",
+      "Call 112",
+      "Don't panic",
+      "CPR now",
+      "You okay?",
+      "Need help",
+      "Emergency",
+      "Breathe",
+      "Stay calm",
+      "Press hard",
+    ];
+    // Fill the entire container with scattered chips (excluding heart+ring area)
+    // Density scaled to area (bounded)
+    const area = rect.width * rect.height;
+    const count = Math.min(40, Math.max(20, Math.round(area / 9000)));
+    let idx = 0;
+    for (let i = 0; i < count; i++) {
+      let rx = 0,
+        ry = 0,
+        tries = 0;
+      // Try positions until we find one not too close to center
+      do {
+        rx = Math.random() * rect.width;
+        ry = Math.random() * rect.height;
+        tries++;
+        if (tries > 20) break; // fail-safe
+      } while (Math.hypot(rx - cx, ry - cy) < excludeR);
+      const span = document.createElement("span");
+      span.className =
+        "doodle-text" + (i % 5 === 0 ? " alt" : i % 7 === 0 ? " warn" : "");
+      span.textContent = phrases[idx++ % phrases.length];
+      span.style.left = rx + "px";
+      span.style.top = ry + "px";
+      span.style.setProperty(
+        "--rot",
+        (Math.random() * 28 - 14).toFixed(1) + "deg"
+      );
+      span.style.setProperty(
+        "--fs",
+        (12 + Math.random() * 12).toFixed(0) + "px"
+      );
+      // Random wiggle timing pre-set for stagger effect on press
+      span.style.setProperty(
+        "--wdur",
+        (0.5 + Math.random() * 0.7).toFixed(2) + "s"
+      );
+      span.style.setProperty(
+        "--wdelay",
+        (Math.random() * 0.2).toFixed(2) + "s"
+      );
+      wrap.appendChild(span);
+    }
+    // On each heartClick, animate a few random doodles
+    document.addEventListener(
+      "heartClick",
+      () => {
+        const chips = wrap.querySelectorAll(".doodle-text");
+        if (!chips.length) return;
+        const count = Math.max(2, Math.floor(chips.length * 0.12));
+        for (let k = 0; k < count; k++) {
+          const i = Math.floor(Math.random() * chips.length);
+          const chip = chips[i];
+          chip.classList.remove("wiggle");
+          // force reflow to restart animation
+          void chip.offsetWidth;
+          chip.classList.add("wiggle");
+          setTimeout(() => chip.classList.remove("wiggle"), 700);
+        }
+      },
+      { passive: true }
+    );
   }
 
   function beep(freq = 440, duration = 120) {
@@ -115,15 +238,17 @@
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      osc.connect(gain); gain.connect(ctx.destination);
-      osc.type = 'sine'; osc.frequency.value = freq;
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = "sine";
+      osc.frequency.value = freq;
       // quick attack/decay to avoid pops
       const now = ctx.currentTime;
       gain.gain.setValueAtTime(0.0001, now);
       gain.gain.exponentialRampToValueAtTime(0.08, now + 0.01);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + duration/1000);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + duration / 1000);
       osc.start();
-      osc.stop(now + duration/1000 + 0.02);
+      osc.stop(now + duration / 1000 + 0.02);
       osc.onended = () => ctx.close();
     } catch (e) {}
   }
@@ -145,7 +270,7 @@
     }
   }
 
-function initCprSim() {
+  function initCprSim() {
     setLife(0);
     startDecay();
     // Parallax background follows cursor subtly (only if simulator wrapper exists)
@@ -166,7 +291,8 @@ function initCprSim() {
       const root = document.querySelector(".sim-heart");
       if (!root) return;
       // Ignore clicks on controls like the sound button
-      if (ev.target && ev.target.closest && ev.target.closest('.sound-btn')) return;
+      if (ev.target && ev.target.closest && ev.target.closest(".sound-btn"))
+        return;
       // If the pointer is inside the heart panel rect, count it
       const r = root.getBoundingClientRect();
       const x = (ev.touches && ev.touches[0]?.clientX) || ev.clientX;
@@ -191,11 +317,31 @@ function initCprSim() {
     });
 
     // Immediate click feedback: pulse ring and tick
-    document.addEventListener('heartClick', () => {
-      const ring = document.getElementById('target-ring');
-      if (ring) { ring.classList.remove('pulse'); void ring.offsetWidth; ring.classList.add('pulse'); }
+    document.addEventListener("heartClick", () => {
+      const ring = document.getElementById("target-ring");
+      if (ring) {
+        ring.classList.remove("pulse");
+        void ring.offsetWidth;
+        ring.classList.add("pulse");
+      }
       beep(560, 36);
     });
+    // Build doodle overlay and keep it synced to size
+    initMindmap();
+    // Debounce util
+    let _mmTO = null;
+    const debouncedMindmap = () => {
+      if (_mmTO) cancelAnimationFrame(_mmTO);
+      _mmTO = requestAnimationFrame(() => initMindmap());
+    };
+    // ResizeObserver for precise container size changes
+    const hc = document.querySelector(".sim-heart .heart-container");
+    if (window.ResizeObserver && hc) {
+      const ro = new ResizeObserver(() => debouncedMindmap());
+      ro.observe(hc);
+    }
+    // Window resize fallback
+    window.addEventListener("resize", debouncedMindmap, { passive: true });
     const soundBtn = document.getElementById("sound-btn");
     if (soundBtn) {
       // Initialize visual state
@@ -221,7 +367,8 @@ function initCprSim() {
       soundBtn.addEventListener("pointerdown", toggleSound);
       soundBtn.addEventListener("touchstart", toggleSound, { passive: false });
       soundBtn.addEventListener("keydown", (e) => {
-        if (e.key === " " || e.key === "Enter") { // space or enter
+        if (e.key === " " || e.key === "Enter") {
+          // space or enter
           toggleSound(e);
         }
       });
@@ -278,13 +425,13 @@ function initCprSim() {
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
-}
+  }
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initCprSim);
-} else {
-  initCprSim();
-}
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initCprSim);
+  } else {
+    initCprSim();
+  }
 
   document.addEventListener("cprReset", () => {
     setLife(0);
@@ -301,12 +448,34 @@ if (document.readyState === 'loading') {
       if (window.__heart3d) window.__heart3d.setRevived(false);
     } catch (e) {}
     stopBeatSound();
+    // Show mindmap again
+    const mm = document.getElementById("mindmap-overlay");
+    if (mm) mm.classList.remove("hidden");
+    // Reset score
+    scoreBeats = 0;
+    scoreStartTime = null;
+    scoreEndTime = null;
+    scoreDevSum = 0;
+    scoreSamples = 0;
+    updateScoreUI(0);
+    const finalPanel = document.getElementById("score-panel-final");
+    if (finalPanel) finalPanel.classList.add("hidden");
   });
 
   document.addEventListener("cprFeedback", (e) => {
     const { status, bpm } = e.detail || {};
     setPatientState(status);
     setRingState(status);
+    // Start score timing on first feedback
+    if (scoreStartTime === null) scoreStartTime = Date.now();
+    // Update score metrics if we have a BPM reading
+    if (typeof bpm === "number" && !Number.isNaN(bpm)) {
+      scoreBeats++;
+      scoreSamples++;
+      const dev = Math.abs(bpm - 110);
+      scoreDevSum += dev;
+      updateScoreLivePartial();
+    }
     if (status === "perfect") {
       setLife(life + 8);
       beep(880, 80);
@@ -318,6 +487,9 @@ if (document.readyState === 'loading') {
     if (life >= 100) {
       setLife(100);
       celebrateRevive(bpm);
+      // Finalize score
+      if (scoreEndTime === null) scoreEndTime = Date.now();
+      finalizeScore();
       // Start autonomous beating and switch heart to revived color
       try {
         if (window.__heart3d)
@@ -356,4 +528,48 @@ if (document.readyState === 'loading') {
     const tap = document.getElementById("tap-hint");
     if (tap) tap.style.opacity = "0";
   });
+
+  function clamp01(x) {
+    return Math.max(0, Math.min(1, x));
+  }
+  function updateScoreLivePartial() {
+    const accAvg = scoreSamples ? scoreDevSum / scoreSamples : 0; // avg abs deviation
+    const accScore = (1 - clamp01(accAvg / 20)) * 100; // 0 at 20 BPM off, 100 at perfect
+    const idealBeats = 13; // approximate number of presses to reach 100% at good pace
+    const beatScore = scoreBeats ? clamp01(idealBeats / scoreBeats) * 100 : 0;
+    const live = Math.round(accScore * 0.7 + beatScore * 0.3);
+    updateScoreUI(live);
+  }
+  function finalizeScore() {
+    const accAvg = scoreSamples ? scoreDevSum / scoreSamples : 0;
+    const accScore = (1 - clamp01(accAvg / 20)) * 100;
+    const idealBeats = 13;
+    const beatScore = scoreBeats ? clamp01(idealBeats / scoreBeats) * 100 : 0;
+    const elapsed =
+      scoreEndTime && scoreStartTime
+        ? (scoreEndTime - scoreStartTime) / 1000
+        : 0;
+    const targetTime = 15; // seconds
+    const timeScore = elapsed ? clamp01(targetTime / elapsed) * 100 : 0;
+    const total = Math.round(
+      accScore * 0.5 + beatScore * 0.3 + timeScore * 0.2
+    );
+    updateScoreUI(total);
+    bumpScoreBadge();
+    const finalPanel = document.getElementById("score-panel-final");
+    if (finalPanel) finalPanel.classList.remove("hidden");
+  }
+  function updateScoreUI(score) {
+    const badge = document.getElementById("score-number");
+    const panel = document.getElementById("score-value");
+    if (badge) badge.textContent = String(score);
+    if (panel) panel.textContent = String(score);
+  }
+  function bumpScoreBadge() {
+    const badge = document.getElementById("score-badge");
+    if (!badge) return;
+    badge.classList.remove("bump");
+    void badge.offsetWidth;
+    badge.classList.add("bump");
+  }
 })();
