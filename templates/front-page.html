@@ -1,47 +1,173 @@
 <!-- wp:group {"style":{"spacing":{"padding":{"top":"0","bottom":"0","left":"0","right":"0"},"margin":{"top":"0","bottom":"0"}}},"className":"min-h-screen"} -->
-<div class="wp-block-group min-h-screen" style="margin-top:0;margin-bottom:0;padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
-
-  <!-- Minimal 3D Heart Container -->
-  <!-- wp:group {"layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"center","orientation":"vertical"}} -->
-  <div class="wp-block-group heart-container">
-    
-    <!-- 3D WebGL Heart -->
-    <!-- wp:html -->
-    <div id="cpr-heart" class="heart-3d">
-      <!-- Canvas will be inserted here by 3d-heart.js -->
-    </div>
-    <!-- /wp:html -->
-    
-    <!-- Minimal BPM -->
-    <!-- wp:html -->
-    <div class="absolute top-20 left-1/2 transform -translate-x-1/2">
-      <div class="backdrop-blur-md bg-white/10 rounded-full px-8 py-3">
-        <h2 id="bpm-display" class="text-2xl font-bold text-white">110</h2>
-      </div>
-    </div>
-    <!-- /wp:html -->
-    
-    <!-- Status Dot -->
-    <!-- wp:html -->
-    <div class="absolute top-12 left-12">
-      <div id="status-indicator" class="w-4 h-4 rounded-full bg-white/30 shadow-lg"></div>
-    </div>
-    <!-- /wp:html -->
-    
-    <!-- Reset -->
-    <!-- wp:html -->
-    <div class="absolute top-12 right-12">
-      <button id="reset-btn" class="w-10 h-10 rounded-full backdrop-blur-md bg-white/10 text-white text-sm hover:bg-white/20 transition-all shadow-lg">×</button>
-    </div>
-    <!-- /wp:html -->
-    
-  </div>
-  <!-- /wp:group -->
-  
-  <!-- Full Screen Feedback Flash -->
+<div
+  class="wp-block-group min-h-screen"
+  id="top"
+  style="margin: 0; padding: 0; background: #ffffff"
+>
+  <!-- CPR Simulator (inline, no shortcodes) -->
   <!-- wp:html -->
-  <div id="screen-flash" class="fixed inset-0 pointer-events-none opacity-0 z-50 transition-opacity duration-300"></div>
+  <div class="cpr-sim">
+    <!-- Pure white background (no tinted overlay) -->
+
+    <header class="sim-topbar">
+      <div class="sim-pill">
+        <span class="sim-icon">❤</span>
+        <span class="sim-text">Aim 100–120 BPM</span>
+      </div>
+      <div class="sim-pill">Exact rhythm revives • Off rhythm harms</div>
+    </header>
+
+    <main class="sim-stage">
+      <section class="sim-heart">
+        <!-- Target circle behind heart -->
+        <div class="target-ring" id="target-ring"></div>
+        <!-- Revive progress ring (overlay) -->
+        <div class="revive-progress" id="revive-progress"></div>
+
+        <!-- Heart container + canvas (stacked above ring/progress) -->
+        <div class="heart-container">
+          <div id="screen-flash" class="screen-flash"></div>
+          <div class="heart-3d">
+            <div id="cpr-heart" aria-label="CPR Heart" role="button"></div>
+          </div>
+        </div>
+
+        <!-- Sound toggle -->
+        <button
+          type="button"
+          class="sound-btn"
+          id="sound-btn"
+          aria-pressed="true"
+          aria-label="Mute sound"
+        >
+          <!-- Sound ON icon -->
+          <svg
+            class="icon-sound-on"
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M4 10h3l5-4v12l-5-4H4z"
+              stroke="currentColor"
+              stroke-width="1.6"
+              fill="currentColor"
+              fill-opacity=".2"
+            />
+            <path
+              d="M16.5 8.5c1.5 1.5 1.5 5.5 0 7"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+            />
+            <path
+              d="M19 6c3 3 3 9 0 12"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+            />
+          </svg>
+          <!-- Sound OFF icon -->
+          <svg
+            class="icon-sound-off"
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M4 10h3l5-4v12l-5-4H4z"
+              stroke="currentColor"
+              stroke-width="1.6"
+              fill="currentColor"
+              fill-opacity=".2"
+            />
+            <path
+              d="M18 6L6 18"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+            />
+            <path
+              d="M6 6l12 12"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
+
+        <!-- Status indicator (top-right) -->
+        <div class="status-dot" id="status-indicator" aria-hidden="true"></div>
+
+        <!-- BPM badge removed for a cleaner UI -->
+      </section>
+
+      <!-- Patient panel removed for a cleaner, focused UI -->
+    </main>
+
+    <footer class="sim-footer">
+      <div class="legend">
+        <span class="dot dot-green"></span> perfect
+        <span class="dot dot-blue"></span> slow
+        <span class="dot dot-red"></span> fast
+      </div>
+    </footer>
+  </div>
   <!-- /wp:html -->
 
+  <!-- Content cards below the simulator -->
+  <!-- wp:html -->
+  <section class="info-band" id="about">
+    <div class="info-wrap">
+      <article class="info-hero">
+        <h2>REAVO: Simple. Visual. Life‑Saving Rhythm.</h2>
+        <p>
+          REAVO turns CPR pacing into an intuitive, visual experience. Tap the
+          heart in rhythm: on‑target beats build life, off‑target drains it.
+          Reach 100% and the heart reanimates—auto‑beating to confirm the pace
+          you’re aiming for in reality.
+        </p>
+        <p>
+          The target range is <strong>100–120 BPM</strong>. Train your timing in
+          seconds, without reading a manual. It’s designed for classrooms,
+          teams, and anyone who wants to feel what good pacing looks and sounds
+          like.
+        </p>
+        <p>
+          Want to integrate REAVO into your training or demo? We can tailor the
+          visuals, thresholds, and content to your audience. Let’s make better
+          outcomes feel obvious.
+        </p>
+        <a class="info-cta" href="#contact">Get in touch</a>
+      </article>
+    </div>
+  </section>
+
+  <!-- Contact band -->
+  <!-- wp:html -->
+  <section class="info-band" id="contact" aria-label="Contact">
+    <div class="info-wrap">
+      <article class="info-hero info-hero--full" style="text-align: center">
+        <h2>Contact</h2>
+        <p>
+          Bring REAVO to your team, classroom, or event. We’ll tailor the
+          pacing, visuals, and copy to your audience.
+        </p>
+        <a class="info-cta" href="mailto:hello@reavo.example"
+          >hello@reavo.example</a
+        >
+      </article>
+    </div>
+  </section>
+  <!-- /wp:html -->
+  <!-- /wp:html -->
 </div>
 <!-- /wp:group -->

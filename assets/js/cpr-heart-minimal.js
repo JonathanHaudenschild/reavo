@@ -3,6 +3,10 @@ class CPRHeartMinimal {
     this.clicks = [];
     this.targetBPM = { min: 100, max: 120 };
     this.currentStatus = 'idle';
+    this.lastEventTs = 0;
+    this.refractoryMs = 220; // ignore back-to-back taps within this window
+    this.smoothedBPM = null;
+    this.smoothingAlpha = 0.35; // EMA smoothing factor
     
     this.init();
   }
@@ -19,7 +23,11 @@ class CPRHeartMinimal {
   
   handleHeartClick(e) {
     const now = Date.now();
+    // Refractory period to avoid double-counting (e.g., pointerdown + touchstart)
+    if (now - this.lastEventTs < this.refractoryMs) return;
+    this.lastEventTs = now;
     this.clicks.push(now);
+    // No BPM badge reveal (badge removed from UI)
     
     // 3D heart animation
     this.triggerHeartbeat3D();
@@ -29,7 +37,8 @@ class CPRHeartMinimal {
     this.clicks = this.clicks.filter(click => now - click <= 10000);
     
     if (this.clicks.length >= 2) {
-      this.calculateBPM();
+      // small delay to simulate realistic sensing latency
+      setTimeout(() => this.calculateBPM(), 80);
     }
   }
   
@@ -43,7 +52,7 @@ class CPRHeartMinimal {
   }
   
   createParticleBurst3D(e) {
-    const container = e.target.closest('.heart-3d').parentElement;
+    const container = document.querySelector('.heart-container') || document.getElementById('cpr-heart')?.parentElement || document.body;
     
     for (let i = 0; i < 8; i++) {
       const particle = document.createElement('div');
@@ -87,12 +96,23 @@ class CPRHeartMinimal {
     for (let i = 1; i < this.clicks.length; i++) {
       intervals.push(this.clicks[i] - this.clicks[i - 1]);
     }
+    // Use the last up to 5 intervals for stability
+    const recent = intervals.slice(-5);
+    // Remove obvious outliers via trimmed mean
+    const sorted = recent.slice().sort((a,b)=>a-b);
+    let trimmed = sorted;
+    if (sorted.length >= 3) {
+      trimmed = sorted.slice(1, sorted.length - 1);
+    }
+    const meanInterval = trimmed.reduce((s,v)=>s+v,0) / trimmed.length;
+    let bpm = 60000 / meanInterval;
+    // Smooth the displayed BPM using EMA
+    if (this.smoothedBPM == null) this.smoothedBPM = bpm;
+    this.smoothedBPM = this.smoothedBPM + this.smoothingAlpha * (bpm - this.smoothedBPM);
+    const displayBPM = Math.round(this.smoothedBPM);
     
-    const avgInterval = intervals.reduce((sum, interval) => sum + interval, 0) / intervals.length;
-    const bpm = Math.round(60000 / avgInterval);
-    
-    this.updateDisplay(bpm);
-    this.provideFeedback(bpm);
+    this.updateDisplay(displayBPM);
+    this.provideFeedback(displayBPM);
   }
   
   updateDisplay(bpm) {
@@ -125,10 +145,10 @@ class CPRHeartMinimal {
   provideFeedback(bpm) {
     const statusIndicator = document.getElementById('status-indicator');
     const heart = document.getElementById('cpr-heart');
-    const bpmDisplay = document.getElementById('bpm-display').parentElement;
+    const bpmNode = document.getElementById('bpm-display');
+    const bpmDisplay = bpmNode ? bpmNode.parentElement : null;
     const screenFlash = document.getElementById('screen-flash');
-    
-    if (!statusIndicator || !heart) return;
+    // Proceed even if some UI elements are missing
     
     let statusClass, newStatus, isPositive;
     
@@ -152,15 +172,15 @@ class CPRHeartMinimal {
       
       // Clear previous animations
       heart.classList.remove('positive', 'negative', 'pulse');
-      statusIndicator.classList.remove('status-positive', 'status-negative');
-      bpmDisplay.classList.remove('bpm-positive', 'bpm-negative');
+      if (statusIndicator) statusIndicator.classList.remove('status-positive', 'status-negative');
+      if (bpmDisplay) bpmDisplay.classList.remove('bpm-positive', 'bpm-negative');
       screenFlash.classList.remove('screen-flash-positive', 'screen-flash-negative');
       
       // Add feedback animations
       if (isPositive) {
         heart.classList.add('positive');
-        statusIndicator.classList.add('status-positive');
-        bpmDisplay.classList.add('bpm-positive');
+        if (statusIndicator) statusIndicator.classList.add('status-positive');
+        if (bpmDisplay) bpmDisplay.classList.add('bpm-positive');
         screenFlash.classList.add('screen-flash-positive');
         
         // Create success particles
@@ -168,8 +188,8 @@ class CPRHeartMinimal {
         this.triggerScreenFlash(true);
       } else {
         heart.classList.add('negative');
-        statusIndicator.classList.add('status-negative');
-        bpmDisplay.classList.add('bpm-negative');
+        if (statusIndicator) statusIndicator.classList.add('status-negative');
+        if (bpmDisplay) bpmDisplay.classList.add('bpm-negative');
         screenFlash.classList.add('screen-flash-negative');
         
         this.triggerScreenFlash(false);
@@ -178,22 +198,32 @@ class CPRHeartMinimal {
       // Remove animation classes after animation completes
       setTimeout(() => {
         heart.classList.remove('positive', 'negative');
-        statusIndicator.classList.remove('status-positive', 'status-negative');
-        bpmDisplay.classList.remove('bpm-positive', 'bpm-negative');
+        if (statusIndicator) statusIndicator.classList.remove('status-positive', 'status-negative');
+        if (bpmDisplay) bpmDisplay.classList.remove('bpm-positive', 'bpm-negative');
         screenFlash.classList.remove('screen-flash-positive', 'screen-flash-negative');
       }, isPositive ? 1200 : 800);
     }
     
-    statusIndicator.className = `w-3 h-3 rounded-full ${statusClass} transition-all duration-300 shadow-lg`;
-    
-    // Update heart glow
-    if (newStatus === 'perfect') {
-      heart.style.filter = 'drop-shadow(0 0 40px #10b981)';
-    } else if (newStatus === 'slow') {
-      heart.style.filter = 'drop-shadow(0 0 40px #3a86ff)';
-    } else {
-      heart.style.filter = 'drop-shadow(0 0 40px #ff006e)';
+    if (statusIndicator) {
+      // Update status dot color/glow without nuking base styles
+      if (newStatus === 'perfect') {
+        statusIndicator.style.backgroundColor = '#10b981';
+        statusIndicator.style.boxShadow = '0 0 16px #10b98188';
+      } else if (newStatus === 'slow') {
+        statusIndicator.style.backgroundColor = '#3a86ff';
+        statusIndicator.style.boxShadow = '0 0 16px #3a86ff88';
+      } else {
+        statusIndicator.style.backgroundColor = '#ff006e';
+        statusIndicator.style.boxShadow = '0 0 16px #ff006e88';
+      }
     }
+    
+    // Remove CSS filter glows to avoid rectangular blur around canvas
+    if (heart) heart.style.filter = '';
+
+    // Dispatch global feedback event so other UIs can react
+    const evt = new CustomEvent('cprFeedback', { detail: { bpm, status: newStatus } });
+    document.dispatchEvent(evt);
   }
   
   triggerScreenFlash(isPositive) {
@@ -277,6 +307,9 @@ class CPRHeartMinimal {
     if (statusIndicator) {
       statusIndicator.className = 'w-3 h-3 rounded-full bg-white/30';
     }
+
+    // Dispatch reset event
+    document.dispatchEvent(new CustomEvent('cprReset'));
   }
 }
 
