@@ -76,7 +76,7 @@ p {
   }
 
   h2 {
-    @apply text-[2.75rem] leading-[3.25rem] tracking-[-0.05rem];
+    @apply text-[2.75rem] leading-[3rem] tracking-[-0.05rem];
   }
 
   h3 {
@@ -96,6 +96,39 @@ p {
   h6 {
     @apply text-[1rem] leading-[1.5rem] tracking-[-0.01rem];
     margin-bottom: 0.75rem;
+  }
+}
+
+@media (max-width: 640px) {
+  h1,
+  .wp-block-heading.is-style-h1 {
+    font-size: 2.25rem;
+    line-height: 2.75rem;
+  }
+
+  h2 {
+    font-size: 2rem;
+    line-height: 2.4rem;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+
+  h4 {
+    font-size: 1.25rem;
+    line-height: 1.5rem;
+  }
+
+  h5 {
+    font-size: 1.125rem;
+    line-height: 1.5rem;
+  }
+
+  h6 {
+    font-size: 1rem;
+    line-height: 1.4rem;
   }
 }
 
@@ -291,7 +324,7 @@ p {
   display: flex;
   flex-direction: column;
   background-color: white;
-  background-image: radial-gradient(circle, #F23005 1px, transparent 1px);
+  background-image: radial-gradient(circle, #f23005 1px, transparent 1px);
   background-size: 10px 10px;
   background-position: 0 0, 10px 10px;
   border-radius: 24px;
@@ -464,7 +497,7 @@ p {
 }
 
 .cpr-circle-text {
-  color: #F23005;
+  color: #f23005;
   font-size: 1.5rem;
   font-weight: 600;
   text-align: center;
@@ -480,7 +513,7 @@ p {
 
 /* CPR Modal close button */
 .cpr-modal__close {
-  background-color: #F23005;
+  background-color: #f23005;
   z-index: 1;
 }
 
@@ -538,7 +571,8 @@ p {
 }
 
 @keyframes pulse-health {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {

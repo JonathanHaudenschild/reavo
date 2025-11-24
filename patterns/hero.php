@@ -8,8 +8,8 @@
 ?>
 <!-- wp:group {"className":"hero relative flex justify-center md:min-h-screen","layout":{"type":"default"}} -->
 <div class="wp-block-group hero relative w-full flex justify-center md:min-h-screen">
-  <!-- wp:group {"className":"relative z-10 py-20 grid md:grid-cols-[60%_40%] gap-2","layout":{"type":"constrained","contentSize":"1280px"}} -->
-  <div class="wp-block-group relative z-10 py-20 grid md:grid-cols-[60%_40%] gap-2">
+  <!-- wp:group {"className":"relative z-10 py-4 md:py-20 grid md:grid-cols-[60%_40%] gap-2","layout":{"type":"constrained","contentSize":"1280px"}} -->
+  <div class="wp-block-group relative z-10 py-4 md:py-20 grid md:grid-cols-[60%_40%] gap-2">
     <!-- wp:group {"className":"flex flex-col gap-4"} -->
     <div class="wp-block-group flex flex-col gap-4">
       <!-- wp:heading {"level":1,"className":"text-primary"} -->
