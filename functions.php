@@ -89,6 +89,8 @@ add_filter('upload_mimes', function ($mimes) {
   return $mimes;
 });
 
+add_filter('the_content', 'shortcode_unautop');
+
 add_action('init', function () {
 
   if (function_exists('register_block_style')) {
@@ -117,10 +119,13 @@ add_action('init', function () {
     );
   }
 
-  add_shortcode('cpr_modal', function ($atts = []) {
+  $reavo_cpr_modal_registered = false;
+
+  add_shortcode('cpr_modal', function ($atts = []) use (&$reavo_cpr_modal_registered) {
     $atts = shortcode_atts([
-      'button_text'  => __('Demo ausprobieren', 'reavo'),
+      'button_text'  => __('Interactive Game', 'reavo'),
       'button_class' => '',
+      'button_style' => 'border:2px solid var(--wp--preset--color--primary);background-color:transparent;color:var(--wp--preset--color--primary);',
       'show_button'  => '1',
       'inline'       => '0',
     ], $atts, 'cpr_modal');
@@ -129,116 +134,25 @@ add_action('init', function () {
 
     $show_button = filter_var($atts['show_button'], FILTER_VALIDATE_BOOLEAN);
     $inline_button = filter_var($atts['inline'], FILTER_VALIDATE_BOOLEAN);
-    $button_classes = trim('wp-block-button__link inline-flex items-center justify-center rounded-full border-2 border-primary text-primary bg-transparent px-6 py-3 text-base font-semibold transition hover:bg-primary hover:text-white ' . $atts['button_class']);
+    $button_classes = trim('wp-block-button__link is-style-outline has-primary-color has-primary-border-color inline-flex items-center justify-center rounded-full border-2 border-primary text-primary bg-transparent px-6 py-3 text-base font-semibold transition hover:bg-primary hover:text-white ' . $atts['button_class']);
 
-    ob_start();
-
-    if ($show_button) {
-      if ($inline_button) {
-        ?>
-        <div class="wp-block-button cpr-modal-trigger">
-          <a href="#" class="<?php echo esc_attr($button_classes); ?>" data-open-cpr="true" role="button">
-            <?php echo esc_html($atts['button_text']); ?>
-          </a>
-        </div>
-        <?php
-      } else {
-        ?>
-        <div class="wp-block-buttons cpr-modal-trigger">
-          <div class="wp-block-button">
-            <a href="#" class="<?php echo esc_attr($button_classes); ?>" data-open-cpr="true" role="button">
-              <?php echo esc_html($atts['button_text']); ?>
-            </a>
-          </div>
-        </div>
-        <?php
-      }
+    if ($show_button && $inline_button) {
+      $button_markup = sprintf(
+        '<div class="wp-block-button cpr-modal-trigger"><a href="#" class="%s" style="%s" data-open-cpr="true" role="button">%s</a></div>',
+        esc_attr($button_classes),
+        esc_attr($atts['button_style']),
+        esc_html($atts['button_text'])
+      );
+    } else {
+      $button_markup = '';
     }
-    ?>
-    <div
-      id="cpr-modal"
-      class="fixed inset-0 z-[1000] flex items-center justify-center px-4 py-8 bg-slate-950/80 opacity-0 pointer-events-none transition-opacity duration-200"
-      aria-hidden="true"
-    >
-      <div class="cpr-modal__overlay absolute inset-0" data-modal-close></div>
-      <div
-        class="cpr-modal-bg relative w-full max-w-5xl max-h-[calc(100vh-4rem)] overflow-hidden rounded-3xl p-8 shadow-[0_25px_80px_rgba(2,6,23,0.35)] flex flex-col"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="cprModalTitle"
-      >
-        <button
-          type="button"
-          class="cpr-modal__close absolute right-6 top-6 inline-flex h-10 w-10 items-center justify-center rounded-full text-white transition hover:opacity-90"
-          data-modal-close
-          aria-label="<?php esc_attr_e('Close CPR simulator', 'reavo'); ?>"
-        >
-          <span aria-hidden="true" class="text-2xl leading-none">&times;</span>
-        </button>
-        <div class="flex-1 flex flex-col overflow-hidden">
-          <div class="cpr-sim">
-            <header class="sim-topbar">
-              <div class="health-bar-container">
-                <div class="health-bar-label">
-                  <span><?php esc_html_e('Leben', 'reavo'); ?></span>
-                  <span id="health-value">100%</span>
-                </div>
-                <div class="health-bar">
-                  <div class="health-bar-fill" id="health-bar-fill" style="width: 100%"></div>
-                </div>
-              </div>
-            </header>
-              <main class="sim-stage">
-                <section class="sim-heart">
-                  <div class="heart-container">
-                    <div class="target-ring" id="target-ring" role="button" tabindex="0" aria-label="<?php esc_attr_e('Hier drücken für CPR', 'reavo'); ?>">
-                      <span class="cpr-circle-text"><?php esc_html_e('Hier drücken', 'reavo'); ?></span>
-                    </div>
-                    <div class="revive-progress" id="revive-progress"></div>
-                    <div class="success-message hidden" id="success-message">
-                      <div class="success-content">
-                        <div class="success-icon">✓</div>
-                        <h3><?php esc_html_e('Erfolgreich wiederbelebt!', 'reavo'); ?></h3>
-                        <p><?php esc_html_e('Du hast den Patienten gerettet', 'reavo'); ?></p>
-                      </div>
-                    </div>
-                    <div class="gameover-message hidden" id="gameover-message">
-                      <div class="gameover-content">
-                        <div class="gameover-icon">✕</div>
-                        <h3><?php esc_html_e('Zu spät!', 'reavo'); ?></h3>
-                        <p><?php esc_html_e('Der Patient konnte nicht gerettet werden', 'reavo'); ?></p>
-                      </div>
-                    </div>
-                  </div>
-                  <button type="button" class="sound-btn" id="sound-btn" aria-pressed="true" aria-label="<?php esc_attr_e('Mute sound', 'reavo'); ?>">
-                    <svg class="icon-sound-on" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                      <path d="M4 10h3l5-4v12l-5-4H4z" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity=".2" />
-                      <path d="M16.5 8.5c1.5 1.5 1.5 5.5 0 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
-                      <path d="M19 6c3 3 3 9 0 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
-                    </svg>
-                    <svg class="icon-sound-off" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                      <path d="M4 10h3l5-4v12l-5-4H4z" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity=".2" />
-                      <path d="M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
-                      <path d="M6 6l12 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
-                    </svg>
-                  </button>
-                  <div class="status-dot" id="status-indicator" aria-hidden="true"></div>
-                </section>
-              </main>
-              <footer class="sim-footer">
-                <div class="legend">
-                  <span class="dot dot-green"></span> <?php esc_html_e('perfekt', 'reavo'); ?>
-                  <span class="dot dot-blue"></span> <?php esc_html_e('langsam', 'reavo'); ?>
-                  <span class="dot dot-red"></span> <?php esc_html_e('schnell', 'reavo'); ?>
-                </div>
-              </footer>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <?php
-    return ob_get_clean();
+
+    if (!$reavo_cpr_modal_registered) {
+      add_action('wp_footer', 'reavo_render_cpr_modal', 20);
+      $reavo_cpr_modal_registered = true;
+    }
+
+    return $button_markup;
   });
 
   // Full simulator shortcode

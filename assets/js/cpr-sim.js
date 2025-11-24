@@ -5,6 +5,15 @@
   let decayTimer = null;
   let soundEnabled = true;
   let isRevived = false;
+  const isCprActive = () => {
+    const modal = document.getElementById("cpr-modal");
+    if (!modal) return true; // allow interaction on non-modal layouts
+    const ariaHidden = modal.getAttribute("aria-hidden");
+    return (
+      modal.classList.contains("is-open") ||
+      (ariaHidden && ariaHidden.toLowerCase() === "false")
+    );
+  };
 
   function clamp(n, min, max) {
     return Math.max(min, Math.min(max, n));
@@ -170,7 +179,11 @@
   function initCprSim() {
     setHealth(100);
     setReviveProgress(0);
-    startDecay();
+    if (isCprActive()) {
+      startDecay();
+    } else {
+      stopDecay();
+    }
     // Parallax background follows cursor subtly (only if simulator wrapper exists)
     const bg = document.querySelector(".cpr-bg");
     if (bg) {
@@ -186,6 +199,7 @@
     }
     // Allow taps anywhere in the heart panel – capture phase to avoid any overlay timing quirks
     const press = (ev) => {
+      if (!isCprActive()) return;
       const root = document.querySelector(".sim-heart");
       if (!root) return;
       // Ignore clicks on controls like the sound button
@@ -215,7 +229,8 @@
     });
 
     // Immediate click feedback: pulse ring and tick
-    document.addEventListener("heartClick", () => {
+    const handleHeartClick = () => {
+      if (!isCprActive()) return;
       const ring = document.getElementById("target-ring");
       if (ring) {
         ring.classList.remove("pulse");
@@ -223,7 +238,8 @@
         ring.classList.add("pulse");
       }
       beep(560, 36);
-    });
+    };
+    document.addEventListener("heartClick", handleHeartClick);
     const soundBtn = document.getElementById("sound-btn");
     if (soundBtn) {
       // Initialize visual state
@@ -338,6 +354,7 @@
   });
 
   document.addEventListener("cprFeedback", (e) => {
+    if (!isCprActive()) return;
     const { status, bpm } = e.detail || {};
 
     // If already revived, clicking resets
@@ -366,4 +383,11 @@
     }
   });
 
+  document.addEventListener("cprModalOpen", () => {
+    reset();
+  });
+
+  document.addEventListener("cprModalClose", () => {
+    stopDecay();
+  });
 })();

@@ -47,6 +47,7 @@
       if (focusTarget) {
         focusTarget.focus();
       }
+      document.dispatchEvent(new CustomEvent('cprModalOpen'));
     };
 
     const closeModal = () => {
@@ -59,6 +60,7 @@
       setAriaState(false);
       enableScroll();
       markSeen();
+      document.dispatchEvent(new CustomEvent('cprModalClose'));
       if (lastFocused && typeof lastFocused.focus === 'function') {
         lastFocused.focus();
       }

@@ -99,6 +99,30 @@ p {
   }
 }
 
+@layer components {
+  .wp-element-button,
+  .wp-block-button__link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+  }
+
+  .wp-element-button:not(.has-background),
+  .wp-block-button__link:not(.has-background) {
+    background-color: transparent !important;
+  }
+
+  .wp-element-button.is-style-outline,
+  .wp-block-button__link.is-style-outline {
+    border-width: 2px;
+    border-style: solid;
+    border-color: var(--wp--preset--color--primary);
+    color: var(--wp--preset--color--primary);
+    background-color: transparent !important;
+  }
+}
+
 /* List block defaults */
 .wp-block-list,
 .wp-block-list ul,

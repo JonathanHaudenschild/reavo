@@ -1,65 +1,62 @@
 <!-- wp:template-part {"slug":"header","area":"header"} /-->
-<!-- wp:group {"className":"front-page relative","layout":{"type":"default"}} -->
-<div class="wp-block-group front-page relative" id="top">
-  <!-- wp:group {"className":"max-w-7xl mx-auto","layout":{"type":"constrained","contentSize":"100%"}} -->
-  <div class="wp-block-group max-w-7xl mx-auto">
+<!-- wp:group {"className":"front-page relative flex justify-center items-center flex-col"} -->
+<div
+  class="wp-block-group front-page relative flex justify-center items-center flex-col"
+  id="top"
+>
+  <!-- wp:group {"className":"max-w-7xl flex flex-col px-12","layout":{"type":"default"}} -->
+  <div class="wp-block-group max-w-7xl flex flex-col px-12">
     <!-- wp:pattern {"slug":"reavo/hero"} /-->
-
-    <!-- wp:group {"className":"space-y-8 p-8"} -->
-    <div class="wp-block-group space-y-8 p-8" id="features">
-      <!-- wp:columns {"className":"gap-6"} -->
-      <div class="wp-block-columns gap-6">
-        <!-- wp:pattern {"slug":"reavo/feature-item"} /-->
-        <!-- wp:pattern {"slug":"reavo/feature-item"} /-->
-        <!-- wp:pattern {"slug":"reavo/feature-item"} /-->
-      </div>
-      <!-- /wp:columns -->
+    <!-- wp:columns {"className":"gap-6 space-y-8 w-full"} -->
+    <div class="wp-block-columns gap-6 space-y-8 w-full" id="features">
+      <!-- wp:pattern {"slug":"reavo/feature-item"} /-->
+      <!-- wp:pattern {"slug":"reavo/feature-item"} /-->
+      <!-- wp:pattern {"slug":"reavo/feature-item"} /-->
     </div>
-    <!-- /wp:group -->
+    <!-- /wp:columns -->
 
-    <!-- wp:group {"className":"space-y-8 p-8"} -->
-    <div class="wp-block-group space-y-8 p-8" id="showcase">
-      <!-- wp:columns {"className":"gap-8 items-center"} -->
-      <div class="wp-block-columns gap-8 items-center">
-        <!-- wp:column -->
-        <div class="wp-block-column">
-          <!-- wp:heading {"level":2} -->
-          <h2 class="wp-block-heading">Showcase Title</h2>
-          <!-- /wp:heading -->
-          <!-- wp:paragraph {"className":"text-black leading-relaxed"} -->
-          <p class="text-black leading-relaxed">
-            Describe the highlight for this section or manually insert a more complex layout directly in this template.
-          </p>
-          <!-- /wp:paragraph -->
-        </div>
-        <!-- /wp:column -->
-        <!-- wp:column -->
-        <div class="wp-block-column">
-          <!-- wp:image {"sizeSlug":"large","className":"rounded-2xl w-full"} -->
-          <figure class="wp-block-image size-large rounded-2xl w-full"><img src="" alt=""/></figure>
-          <!-- /wp:image -->
-        </div>
-        <!-- /wp:column -->
+    <!-- wp:columns {"className":"gap-8 items-center space-y-8 w-full flex"} -->
+    <div
+      class="wp-block-columns gap-8 items-center space-y-8 w-full flex"
+      id="showcase"
+    >
+      <!-- wp:column -->
+      <div class="wp-block-column">
+        <!-- wp:heading {"level":2} -->
+        <h2 class="wp-block-heading">Showcase Title</h2>
+        <!-- /wp:heading -->
+        <!-- wp:paragraph {"className":"text-black leading-relaxed"} -->
+        <p class="text-black leading-relaxed">
+          Describe the highlight for this section or manually insert a more
+          complex layout directly in this template.
+        </p>
+        <!-- /wp:paragraph -->
       </div>
-      <!-- /wp:columns -->
+      <!-- /wp:column -->
+      <!-- wp:column -->
+      <div class="wp-block-column">
+        <!-- wp:image {"sizeSlug":"large","className":"rounded-2xl w-full"} -->
+        <figure class="wp-block-image size-large rounded-2xl w-full">
+          <img src="" alt="" />
+        </figure>
+        <!-- /wp:image -->
+      </div>
+      <!-- /wp:column -->
     </div>
-    <!-- /wp:group -->
+    <!-- /wp:columns -->
 
-    <!-- wp:group {"className":"space-y-8 p-8"} -->
-    <div class="wp-block-group space-y-8 p-8" id="team">
-      <!-- wp:heading {"level":2,"className":"flex justify-center"} -->
-      <h2 class="wp-block-heading flex justify-center">
-        Team
-      </h2>
-      <!-- /wp:heading -->
-      <!-- wp:columns {"className":"gap-6"} -->
-      <div class="wp-block-columns gap-6">
-        <!-- wp:pattern {"slug":"reavo/team-member"} /-->
-        <!-- wp:pattern {"slug":"reavo/team-member"} /-->
-      </div>
-      <!-- /wp:columns -->
+    <!-- wp:heading {"level":2,"className":"flex justify-center space-y-8 w-full"} -->
+    <h2 class="wp-block-heading flex justify-center space-y-8 w-full" id="team">
+      Team
+    </h2>
+    <!-- /wp:heading -->
+
+    <!-- wp:columns {"className":"gap-6"} -->
+    <div class="wp-block-columns gap-6">
+      <!-- wp:pattern {"slug":"reavo/team-member"} /-->
+      <!-- wp:pattern {"slug":"reavo/team-member"} /-->
     </div>
-    <!-- /wp:group -->
+    <!-- /wp:columns -->
 
     <!-- wp:pattern {"slug":"reavo/contact"} /-->
   </div>
