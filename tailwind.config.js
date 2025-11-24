@@ -1,14 +1,28 @@
+const themeJson = require("./theme.json");
+const themePalette =
+  themeJson?.settings?.color?.palette?.reduce((acc, color) => {
+    if (color.slug && color.color) {
+      acc[color.slug] = color.color;
+    }
+    return acc;
+  }, {}) ?? {};
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./**/*.php", "./**/*.html", "./**/*.js", "./**/*.json"],
-  theme: { 
+  theme: {
     extend: {
+      fontFamily: {
+        'neue-haas': ['Neue Haas Grotesk Display Pro', 'sans-serif'],
+        'ibm-plex-mono': ['IBM Plex Mono', 'monospace'],
+      },
       colors: {
-        'amber': '#ffbe0b',
+        ...themePalette,
+        amber: '#ffbe0b',
         'orange-pantone': '#fb5607',
-        'rose': '#ff006e',
+        rose: '#ff006e',
         'blue-violet': '#8338ec',
-        'azure': '#3a86ff',
+        azure: '#3a86ff',
       },
       animation: {
         'heartbeat': 'heartbeat 0.6s ease-in-out',

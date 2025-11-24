@@ -1,32 +1,27 @@
 {
-  "version": 2,
+  "version": 3,
   "settings": {
     "color": {
       "palette": [
         {
-          "color": "#880d1e",
-          "name": "OU Crimson",
-          "slug": "ou-crimson"
+          "color": "#F23005",
+          "name": "primary",
+          "slug": "primary"
         },
         {
-          "color": "#dd2d4a",
-          "name": "Rusty Red",
-          "slug": "rusty-red"
+          "color": "#2C2C2C",
+          "name": "secondary",
+          "slug": "secondary"
         },
         {
-          "color": "#f26a8d",
-          "name": "Bright Pink",
-          "slug": "bright-pink"
+          "color": "#ffffff",
+          "name": "background",
+          "slug": "background"
         },
         {
-          "color": "#f49cbb",
-          "name": "Amaranth Pink",
-          "slug": "amaranth-pink"
-        },
-        {
-          "color": "#cbeef3",
-          "name": "Light Cyan",
-          "slug": "light-cyan"
+          "color": "#000000",
+          "name": "black",
+          "slug": "black"
         },
         {
           "color": "#ffffff",
@@ -38,20 +33,37 @@
     "typography": {
       "fontFamilies": [
         {
-          "fontFamily": "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-          "name": "System Font",
-          "slug": "system-font"
+          "fontFamily": "'Neue Haas Grotesk Display Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+          "name": "Neue Haas Grotesk Display Pro",
+          "slug": "neue-haas"
+        },
+        {
+          "fontFamily": "'IBM Plex Mono', 'Courier New', monospace",
+          "name": "IBM Plex Mono",
+          "slug": "ibm-plex-mono"
         }
       ]
     }
   },
   "styles": {
     "color": {
-      "background": "var(--wp--preset--color--light-cyan)",
-      "text": "var(--wp--preset--color--ou-crimson)"
+      "background": "var(--wp--preset--color--white)",
+      "text": "var(--wp--preset--color--primary)"
     },
     "typography": {
-      "fontFamily": "var(--wp--preset--font-family--system-font)"
+      "fontFamily": "var(--wp--preset--font-family--neue-haas)"
     }
-  }
+  },
+  "templateParts": [
+    {
+      "name": "header",
+      "title": "Header",
+      "area": "header"
+    },
+    {
+      "name": "footer",
+      "title": "Footer",
+      "area": "footer"
+    }
+  ]
 }

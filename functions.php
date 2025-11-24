@@ -5,25 +5,27 @@ add_action('after_setup_theme', function () {
   add_theme_support('title-tag');
   add_theme_support('post-thumbnails');
   add_theme_support('editor-styles');
+  add_theme_support('block-templates');
+  add_theme_support('block-template-parts');
   add_editor_style('assets/build/main.css');
 });
 
 add_action('wp_enqueue_scripts', function () {
+  // Load IBM Plex Mono from Google Fonts
+  wp_enqueue_style(
+    'google-fonts',
+    'https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap',
+    [],
+    null
+  );
+
   wp_enqueue_style(
     'reavo-style',
     get_theme_file_uri('/assets/build/main.css'),
     [],
     filemtime(get_theme_file_path('/assets/build/main.css')) . '-v2.0'
   );
-  
-  // Minimal CPR styles (heart container + feedback)
-  wp_enqueue_style(
-    'reavo-cpr-style',
-    get_theme_file_uri('/assets/css/cpr.css'),
-    ['reavo-style'],
-    filemtime(get_theme_file_path('/assets/css/cpr.css')) . '-v1.0'
-  );
-  
+
   wp_enqueue_script(
     '3d-heart-script',
     get_theme_file_uri('/assets/js/3d-heart.js'),
@@ -40,13 +42,6 @@ add_action('wp_enqueue_scripts', function () {
     true
   );
 
-  // Fancy CPR simulator UI (life meter + HUD)
-  wp_enqueue_style(
-    'reavo-cpr-sim-style',
-    get_theme_file_uri('/assets/css/cpr-sim.css'),
-    ['reavo-style','reavo-cpr-style'],
-    filemtime(get_theme_file_path('/assets/css/cpr-sim.css')) . '-v1.0'
-  );
   wp_enqueue_script(
     'reavo-cpr-sim',
     get_theme_file_uri('/assets/js/cpr-sim.js'),
@@ -54,6 +49,30 @@ add_action('wp_enqueue_scripts', function () {
     filemtime(get_theme_file_path('/assets/js/cpr-sim.js')) . '-v1.0',
     true
   );
+
+  wp_register_script(
+    'reavo-cpr-modal',
+    get_theme_file_uri('/assets/js/cpr-modal.js'),
+    [],
+    filemtime(get_theme_file_path('/assets/js/cpr-modal.js')) . '-v1.0',
+    true
+  );
+
+  if (is_front_page()) {
+    wp_enqueue_script(
+      'reavo-hero-background',
+      get_theme_file_uri('/assets/js/hero-background.js'),
+      [],
+      filemtime(get_theme_file_path('/assets/js/hero-background.js')) . '-v1.0',
+      true
+    );
+
+    wp_localize_script('reavo-hero-background', 'wpThemeData', [
+      'themeUrl' => get_template_directory_uri()
+    ]);
+
+    wp_enqueue_script('reavo-cpr-modal');
+  }
 });
 
 add_action('wp_head', function () {
@@ -64,12 +83,163 @@ add_action('wp_head', function () {
   }
 });
 
-// Transparent migration: render-time replacement of legacy shortcode usages.
-// This avoids a DB write and ensures all pages show the new simulator immediately.
-// Removed legacy shortcode migration filters after content update
+add_filter('upload_mimes', function ($mimes) {
+  $mimes['svg']  = 'image/svg+xml';
+  $mimes['svgz'] = 'image/svg+xml';
+  return $mimes;
+});
 
-// Shortcode to render the CPR heart and HUD
 add_action('init', function () {
+
+  if (function_exists('register_block_style')) {
+    register_block_style(
+      'core/list',
+      [
+        'name'  => 'reavo-accent-list',
+        'label' => __('Accent List', 'reavo'),
+      ]
+    );
+
+    register_block_style(
+      'core/list',
+      [
+        'name'  => 'reavo-check-list',
+        'label' => __('Check List', 'reavo'),
+      ]
+    );
+
+    register_block_style(
+      'core/image',
+      [
+        'name'  => 'reavo-primary-tint',
+        'label' => __('Primary Tint', 'reavo'),
+      ]
+    );
+  }
+
+  add_shortcode('cpr_modal', function ($atts = []) {
+    $atts = shortcode_atts([
+      'button_text'  => __('Demo ausprobieren', 'reavo'),
+      'button_class' => '',
+      'show_button'  => '1',
+      'inline'       => '0',
+    ], $atts, 'cpr_modal');
+
+    wp_enqueue_script('reavo-cpr-modal');
+
+    $show_button = filter_var($atts['show_button'], FILTER_VALIDATE_BOOLEAN);
+    $inline_button = filter_var($atts['inline'], FILTER_VALIDATE_BOOLEAN);
+    $button_classes = trim('wp-block-button__link inline-flex items-center justify-center rounded-full border-2 border-primary text-primary bg-transparent px-6 py-3 text-base font-semibold transition hover:bg-primary hover:text-white ' . $atts['button_class']);
+
+    ob_start();
+
+    if ($show_button) {
+      if ($inline_button) {
+        ?>
+        <div class="wp-block-button cpr-modal-trigger">
+          <a href="#" class="<?php echo esc_attr($button_classes); ?>" data-open-cpr="true" role="button">
+            <?php echo esc_html($atts['button_text']); ?>
+          </a>
+        </div>
+        <?php
+      } else {
+        ?>
+        <div class="wp-block-buttons cpr-modal-trigger">
+          <div class="wp-block-button">
+            <a href="#" class="<?php echo esc_attr($button_classes); ?>" data-open-cpr="true" role="button">
+              <?php echo esc_html($atts['button_text']); ?>
+            </a>
+          </div>
+        </div>
+        <?php
+      }
+    }
+    ?>
+    <div
+      id="cpr-modal"
+      class="fixed inset-0 z-[1000] flex items-center justify-center px-4 py-8 bg-slate-950/80 opacity-0 pointer-events-none transition-opacity duration-200"
+      aria-hidden="true"
+    >
+      <div class="cpr-modal__overlay absolute inset-0" data-modal-close></div>
+      <div
+        class="cpr-modal-bg relative w-full max-w-5xl max-h-[calc(100vh-4rem)] overflow-hidden rounded-3xl p-8 shadow-[0_25px_80px_rgba(2,6,23,0.35)] flex flex-col"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="cprModalTitle"
+      >
+        <button
+          type="button"
+          class="cpr-modal__close absolute right-6 top-6 inline-flex h-10 w-10 items-center justify-center rounded-full text-white transition hover:opacity-90"
+          data-modal-close
+          aria-label="<?php esc_attr_e('Close CPR simulator', 'reavo'); ?>"
+        >
+          <span aria-hidden="true" class="text-2xl leading-none">&times;</span>
+        </button>
+        <div class="flex-1 flex flex-col overflow-hidden">
+          <div class="cpr-sim">
+            <header class="sim-topbar">
+              <div class="health-bar-container">
+                <div class="health-bar-label">
+                  <span><?php esc_html_e('Leben', 'reavo'); ?></span>
+                  <span id="health-value">100%</span>
+                </div>
+                <div class="health-bar">
+                  <div class="health-bar-fill" id="health-bar-fill" style="width: 100%"></div>
+                </div>
+              </div>
+            </header>
+              <main class="sim-stage">
+                <section class="sim-heart">
+                  <div class="heart-container">
+                    <div class="target-ring" id="target-ring" role="button" tabindex="0" aria-label="<?php esc_attr_e('Hier drücken für CPR', 'reavo'); ?>">
+                      <span class="cpr-circle-text"><?php esc_html_e('Hier drücken', 'reavo'); ?></span>
+                    </div>
+                    <div class="revive-progress" id="revive-progress"></div>
+                    <div class="success-message hidden" id="success-message">
+                      <div class="success-content">
+                        <div class="success-icon">✓</div>
+                        <h3><?php esc_html_e('Erfolgreich wiederbelebt!', 'reavo'); ?></h3>
+                        <p><?php esc_html_e('Du hast den Patienten gerettet', 'reavo'); ?></p>
+                      </div>
+                    </div>
+                    <div class="gameover-message hidden" id="gameover-message">
+                      <div class="gameover-content">
+                        <div class="gameover-icon">✕</div>
+                        <h3><?php esc_html_e('Zu spät!', 'reavo'); ?></h3>
+                        <p><?php esc_html_e('Der Patient konnte nicht gerettet werden', 'reavo'); ?></p>
+                      </div>
+                    </div>
+                  </div>
+                  <button type="button" class="sound-btn" id="sound-btn" aria-pressed="true" aria-label="<?php esc_attr_e('Mute sound', 'reavo'); ?>">
+                    <svg class="icon-sound-on" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                      <path d="M4 10h3l5-4v12l-5-4H4z" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity=".2" />
+                      <path d="M16.5 8.5c1.5 1.5 1.5 5.5 0 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                      <path d="M19 6c3 3 3 9 0 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                    </svg>
+                    <svg class="icon-sound-off" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                      <path d="M4 10h3l5-4v12l-5-4H4z" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity=".2" />
+                      <path d="M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                      <path d="M6 6l12 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                    </svg>
+                  </button>
+                  <div class="status-dot" id="status-indicator" aria-hidden="true"></div>
+                </section>
+              </main>
+              <footer class="sim-footer">
+                <div class="legend">
+                  <span class="dot dot-green"></span> <?php esc_html_e('perfekt', 'reavo'); ?>
+                  <span class="dot dot-blue"></span> <?php esc_html_e('langsam', 'reavo'); ?>
+                  <span class="dot dot-red"></span> <?php esc_html_e('schnell', 'reavo'); ?>
+                </div>
+              </footer>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <?php
+    return ob_get_clean();
+  });
 
   // Full simulator shortcode
   add_shortcode('cpr_simulator', function ($atts = []) {
@@ -153,4 +323,5 @@ add_action('init', function () {
     $full = ($atts['fullwidth'] === '1' || $atts['fullwidth'] === 'true') ? '1' : '0';
     return do_shortcode('[cpr_simulator fullwidth="' . esc_attr($full) . '"]');
   });
+
 });

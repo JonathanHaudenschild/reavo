@@ -9,7 +9,16 @@ export default defineConfig({
       input: 'assets/css/src.css',
       output: {
         entryFileNames: 'main.js',
-        assetFileNames: 'main.css'
+        assetFileNames: (assetInfo) => {
+          // Keep font files with their original names
+          if (assetInfo.name.endsWith('.ttf') ||
+              assetInfo.name.endsWith('.woff') ||
+              assetInfo.name.endsWith('.woff2')) {
+            return '[name][extname]'
+          }
+          // CSS files get named main.css
+          return 'main.css'
+        }
       }
     }
   },

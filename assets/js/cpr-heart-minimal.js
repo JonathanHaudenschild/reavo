@@ -19,7 +19,18 @@ class CPRHeartMinimal {
     
     const resetBtn = document.getElementById('reset-btn');
     if (resetBtn) {
-      resetBtn.addEventListener('click', () => this.reset());
+      resetBtn.addEventListener('click', () => {
+        // Scroll to top
+        try {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } catch (e) {
+          window.scrollTo(0, 0);
+        }
+        // Dispatch global reset event
+        setTimeout(() => {
+          document.dispatchEvent(new CustomEvent('cprReset'));
+        }, 100);
+      });
     }
   }
   
