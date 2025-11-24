@@ -23,9 +23,9 @@
         <!-- wp:button {"backgroundColor":"primary","textColor":"white","className":"inline-flex items-center justify-center rounded-full text-base font-semibold transition hover:opacity-90"} -->
         <div class="wp-block-button inline-flex items-center justify-center rounded-full text-base font-semibold transition hover:opacity-90"><a class="wp-block-button__link has-white-color has-primary-background-color has-text-color has-background wp-element-button" href="#contact">Kontakt</a></div>
         <!-- /wp:button -->
-        <!-- wp:shortcode -->
-        [cpr_modal inline="1" button_text="Interactive Game" button_class="is-style-outline has-primary-color has-primary-border-color"]
-        <!-- /wp:shortcode -->
+        <!-- wp:shortcode {"text":"[cpr_modal inline=\"1\" button_text=\"Interactive Game\" button_class=\"is-style-outline has-primary-color has-primary-border-color\"]"} -->
+[cpr_modal inline="1" button_text="Interactive Game" button_class="is-style-outline has-primary-color has-primary-border-color"]
+<!-- /wp:shortcode -->
       </div>
       <!-- /wp:group -->
     </div>

@@ -155,87 +155,76 @@ add_action('init', function () {
     return $button_markup;
   });
 
-  // Full simulator shortcode
-  add_shortcode('cpr_simulator', function ($atts = []) {
-    $atts = shortcode_atts([
-      'fullwidth' => '0',
-    ], $atts);
-    $full = $atts['fullwidth'] === '1' || $atts['fullwidth'] === 'true';
-    ob_start();
-    ?>
-    <div class="cpr-sim<?php echo $full ? ' fullwidth' : ''; ?>">
-      <div class="cpr-bg"></div>
-
-      <header class="sim-topbar">
-        <div class="sim-pill">
-        </div>
-      </header>
-
-      <main class="sim-grid">
-        <section class="sim-heart">
-          <div class="target-ring" id="target-ring"></div>
-          <div class="bpm-badge" aria-live="polite" aria-atomic="true">
-            <div class="bpm-num" id="sim-bpm-number">110</div>
-            <div class="bpm-label">BPM</div>
-          </div>
-          <div class="heart-container">
-            <div id="screen-flash" class="screen-flash"></div>
-            <div class="heart-hud">
-              <div class="hud-item">
-                <div id="status-indicator" class="w-3 h-3 rounded-full bg-white/30"></div>
-                <span class="label">Status</span>
-              </div>
-              <div class="hud-item">
-                <span class="label">BPM</span>
-                <span class="value"><span id="bpm-display">110</span></span>
-              </div>
-              <button id="reset-btn" class="reset-btn" type="button">Reset</button>
-            </div>
-            <div class="heart-3d">
-              <div id="cpr-heart" aria-label="CPR Heart" role="button"></div>
-            </div>
-          </div>
-        </section>
-
-        <aside class="sim-panel">
-          <div class="patient">
-            <div class="patient-body" id="patient-body">
-              <div class="patient-heart"></div>
-            </div>
-            <div class="patient-status" id="patient-status">Stabilizing…</div>
-          </div>
-
-          <div class="meter">
-            <div class="meter-labels">
-              <span>Life</span>
-              <span id="life-value">0%</span>
-            </div>
-            <div class="meter-bar">
-              <div class="meter-fill" id="life-fill" style="width:0%"></div>
-            </div>
-          </div>
-        </aside>
-      </main>
-
-      <footer class="sim-footer">
-        <div class="legend">
-          <span class="dot dot-green"></span> perfect
-          <span class="dot dot-blue"></span> slow
-          <span class="dot dot-red"></span> fast
-        </div>
-      </footer>
-    </div>
-    <?php
-    return ob_get_clean();
-  });
-
-  // Alias: [cpr] renders the full simulator (preferred shortcode)
-  add_shortcode('cpr', function ($atts = []) {
-    $atts = shortcode_atts([
-      'fullwidth' => '0',
-    ], $atts);
-    $full = ($atts['fullwidth'] === '1' || $atts['fullwidth'] === 'true') ? '1' : '0';
-    return do_shortcode('[cpr_simulator fullwidth="' . esc_attr($full) . '"]');
-  });
-
 });
+
+function reavo_render_cpr_modal() {
+  ?>
+  <div id="cpr-modal" class="fixed inset-0 z-[1000] flex items-center justify-center px-4 py-8 bg-slate-950/80 opacity-0 pointer-events-none transition-opacity duration-200" aria-hidden="true">
+    <div class="cpr-modal__overlay absolute inset-0" data-modal-close></div>
+    <div class="cpr-modal-bg relative w-full max-w-5xl max-h-[calc(100vh-4rem)] overflow-hidden rounded-3xl p-8 shadow-[0_25px_80px_rgba(2,6,23,0.35)] flex flex-col" role="dialog" aria-modal="true" aria-labelledby="cprModalTitle">
+      <button type="button" class="cpr-modal__close absolute right-6 top-6 inline-flex h-10 w-10 items-center justify-center rounded-full text-white transition hover:opacity-90" data-modal-close aria-label="Close CPR simulator">
+        <span aria-hidden="true" class="text-2xl leading-none">×</span>
+      </button>
+      <div class="flex-1 flex flex-col overflow-hidden">
+        <div class="cpr-sim" style="--scroll: 1;">
+          <header class="sim-topbar">
+            <div class="health-bar-container">
+              <div class="health-bar-label">
+                <span>Leben</span>
+                <span id="health-value">100%</span>
+              </div>
+              <div class="health-bar">
+                <div class="health-bar-fill" id="health-bar-fill" style="width: 100%;"></div>
+              </div>
+            </div>
+          </header>
+          <main class="sim-stage">
+            <section class="sim-heart">
+              <div class="heart-container">
+                <div class="target-ring" id="target-ring" role="button" tabindex="0" aria-label="Hier drücken für CPR">
+                  <span class="cpr-circle-text">Hier drücken</span>
+                </div>
+                <div class="revive-progress" id="revive-progress" style="--revive-pct: 0%;"></div>
+                <div class="success-message hidden" id="success-message">
+                  <div class="success-content">
+                    <div class="success-icon">✓</div>
+                    <h3>Erfolgreich wiederbelebt!</h3>
+                    <p>Du hast den Patienten gerettet</p>
+                  </div>
+                </div>
+                <div class="gameover-message hidden" id="gameover-message">
+                  <div class="gameover-content">
+                    <div class="gameover-icon">✕</div>
+                    <h3>Zu spät!</h3>
+                    <p>Der Patient konnte nicht gerettet werden</p>
+                  </div>
+                </div>
+              </div>
+              <button type="button" class="sound-btn" id="sound-btn" aria-pressed="true" aria-label="Mute sound">
+                <svg class="icon-sound-on" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                  <path d="M4 10h3l5-4v12l-5-4H4z" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity=".2"/>
+                  <path d="M16.5 8.5c1.5 1.5 1.5 5.5 0 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                  <path d="M19 6c3 3 3 9 0 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                </svg>
+                <svg class="icon-sound-off" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                  <path d="M4 10h3l5-4v12l-5-4H4z" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity=".2"/>
+                  <path d="M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                  <path d="M6 6l12 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+              </button>
+              <div class="status-dot" id="status-indicator" aria-hidden="true"></div>
+            </section>
+          </main>
+          <footer class="sim-footer">
+            <div class="legend">
+              <span class="dot dot-green"></span> perfekt
+              <span class="dot dot-blue"></span> langsam
+              <span class="dot dot-red"></span> schnell
+            </div>
+          </footer>
+        </div>
+      </div>
+    </div>
+  </div>
+  <?php
+}
